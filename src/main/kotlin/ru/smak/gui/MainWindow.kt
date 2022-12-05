@@ -5,12 +5,10 @@ import ru.smak.graphics.FractalPainter
 import ru.smak.graphics.Plane
 import ru.smak.graphics.testFunc
 import ru.smak.math.Mandelbrot
+import ru.smak.video.VideoWindow
 import java.awt.Color
 import java.awt.Dimension
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
+import java.awt.event.*
 import javax.swing.GroupLayout
 import javax.swing.JFrame
 
@@ -96,6 +94,18 @@ class MainWindow : JFrame() {
                 .addGap(8)
             )
         }
+
+        this.addKeyListener(object : KeyAdapter(){
+            override fun keyPressed(e: KeyEvent?) {
+                super.keyPressed(e)
+                if (e != null)
+                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_O)
+                    {
+                        VideoWindow();
+                    }
+            }
+        })
+
     }
 
     override fun setVisible(b: Boolean) {
