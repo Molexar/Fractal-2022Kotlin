@@ -1,18 +1,20 @@
 package ru.smak.gui
 
-import ru.smak.graphics.*
-import ru.smak.math.Complex
-import ru.smak.math.Julia
+import ru.smak.graphics.Converter
+import ru.smak.graphics.FractalPainter
+import ru.smak.graphics.Plane
+import ru.smak.graphics.testFunc
 import ru.smak.math.Mandelbrot
+import ru.smak.video.VideoWindow
 import java.awt.Color
 import java.awt.Dimension
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
+import java.awt.event.*
 import javax.swing.*
 import kotlin.random.Random
 
+import java.awt.event.*
+import javax.swing.GroupLayout
+import javax.swing.JFrame
 
 open class MainWindow : JFrame() {
     private var rect: Rectangle = Rectangle()
@@ -38,7 +40,6 @@ open class MainWindow : JFrame() {
         mainPanel = GraphicsPanel().apply {
             background = Color.WHITE
             addPainter(fp)
-            //addPainter(fpj)
             addComponentListener(object : ComponentAdapter() {
                 override fun componentResized(e: ComponentEvent?) {
                     super.componentResized(e)
@@ -122,6 +123,18 @@ open class MainWindow : JFrame() {
                     .addGap(8)
             )
         }
+
+        this.addKeyListener(object : KeyAdapter(){
+            override fun keyPressed(e: KeyEvent?) {
+                super.keyPressed(e)
+                if (e != null)
+                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_O)
+                    {
+                        VideoWindow();
+                    }
+            }
+        })
+
     }
 
     class AboutWindow : JFrame() {
