@@ -1,38 +1,41 @@
 package ru.smak.video
 
-import java.awt.Color
+import ru.smak.graphics.Plane
 import java.awt.Dimension
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.*
 
 
-class VideoWindow() : JFrame() {
+class VideoWindow(plane: Plane) : JFrame() {
 
-    val minSize = Dimension(400, 300);
-    val mainPanel: JPanel = JPanel();
+    private val _minSize = Dimension(400, 300);
+    private val _mainPanel: JPanel = JPanel();
+    private val _plane = plane;
 
-    val _videoSettings = VideoSettings;
+    private val _videoSettings = VideoSettings;
 
     // labels
-    val shotsCountLabel = JLabel("Shots count: ${_videoSettings.GetKeyShotsCount()}")
+    private val _shotsCountLabel = JLabel("Shots count: ${_videoSettings.GetKeyShotsCount()}")
 
     // spinners
-    val widthLabel = JLabel("Width");
-    val widthSpinner = JSpinner();
+    private val _widthLabel = JLabel("Width");
+    private val _widthSpinner = JSpinner();
 
-    val heightLabel = JLabel("Height");
-    val heightSpinner = JSpinner();
+    private val _heightLabel = JLabel("Height");
+    private val _heightSpinner = JSpinner();
 
-    val fpsLabel = JLabel("FPS");
-    val fpsSpinner = JSpinner();
+    private val _fpsLabel = JLabel("FPS");
+    private val _fpsSpinner = JSpinner();
 
-    val durationLabel = JLabel("Duration");
-    val durationSpinner = JSpinner();
+    private val _durationLabel = JLabel("Duration");
+    private val _durationSpinner = JSpinner();
 
     // buttons
-    val addShotBtn = JButton("Add Shot");
-    val clearBtn = JButton("Clear");
-    val createBtn = JButton("Create");
-    val showShotsBtn = JButton("Show Shots");
+    private val _addShotBtn = JButton("Add Shot");
+    private val _clearBtn = JButton("Clear");
+    private val _createBtn = JButton("Create");
+    private val _showShotsBtn = JButton("Show Shots");
 
     // static
     companion object {
@@ -42,18 +45,18 @@ class VideoWindow() : JFrame() {
 
     init {
 
+        setupLayout();
+        setupSpinners();
+        setupEventListeners();
 
-        SetupLayout();
-        SetupSpinners();
 
-
-        size = minSize;
+        size = _minSize;
+        isAlwaysOnTop = true;
         isVisible = true;
     }
 
 
-    private fun SetupLayout() {
-
+    private fun setupLayout() {
 
         var gl = GroupLayout(this.contentPane)
         this.layout = gl;
@@ -61,7 +64,7 @@ class VideoWindow() : JFrame() {
         gl.setVerticalGroup(
             gl.createSequentialGroup()
                 .addComponent(
-                    mainPanel,
+                    _mainPanel,
                     GROW,
                     GROW,
                     GROW
@@ -71,15 +74,15 @@ class VideoWindow() : JFrame() {
         gl.setHorizontalGroup(
             gl.createParallelGroup()
                 .addComponent(
-                    mainPanel,
+                    _mainPanel,
                     GROW,
                     GROW,
                     GROW
                 )
         );
 
-        gl = GroupLayout(mainPanel);
-        mainPanel.layout = gl;
+        gl = GroupLayout(_mainPanel);
+        _mainPanel.layout = gl;
 
         gl.setVerticalGroup(
             gl.createParallelGroup()
@@ -87,19 +90,19 @@ class VideoWindow() : JFrame() {
                 .addGroup(
                     gl.createSequentialGroup() // resolution spinners group
                         .addGap(10)
-                        .addComponent(widthLabel, 20, SHRINK, SHRINK)
+                        .addComponent(_widthLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(widthSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(_widthSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(heightLabel, 20, SHRINK, SHRINK)
+                        .addComponent(_heightLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(heightSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(_heightSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(addShotBtn,20, SHRINK, SHRINK)
+                        .addComponent(_addShotBtn, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(createBtn,20, SHRINK, SHRINK)
-                        .addGap(10,10,Int.MAX_VALUE)
-                        .addComponent(shotsCountLabel,20, SHRINK, SHRINK)
+                        .addComponent(_createBtn, 20, SHRINK, SHRINK)
+                        .addGap(10, 10, Int.MAX_VALUE)
+                        .addComponent(_shotsCountLabel, 20, SHRINK, SHRINK)
                 )
                 .addGap(30)
                 .addGroup(
@@ -108,17 +111,17 @@ class VideoWindow() : JFrame() {
                 .addGroup(
                     gl.createSequentialGroup() // video settings group
                         .addGap(10)
-                        .addComponent(fpsLabel, 20, SHRINK, SHRINK)
+                        .addComponent(_fpsLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(fpsSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(_fpsSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(durationLabel, 20, SHRINK, SHRINK)
+                        .addComponent(_durationLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(durationSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(_durationSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(clearBtn,20, SHRINK, SHRINK)
+                        .addComponent(_clearBtn, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(showShotsBtn,20, SHRINK, SHRINK)
+                        .addComponent(_showShotsBtn, 20, SHRINK, SHRINK)
 
                 )
 
@@ -131,40 +134,39 @@ class VideoWindow() : JFrame() {
                 .addGroup(
                     gl.createParallelGroup() // resolution spinners group
                         .addGap(10)
-                        .addComponent(shotsCountLabel,20, SHRINK, SHRINK)
-                        .addComponent(widthLabel, 20, SHRINK, SHRINK)
+                        .addComponent(_shotsCountLabel, 20, SHRINK, SHRINK)
+                        .addComponent(_widthLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(widthSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(_widthSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(heightLabel, 20, SHRINK, SHRINK)
+                        .addComponent(_heightLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(heightSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(_heightSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(addShotBtn,20, SHRINK, SHRINK)
+                        .addComponent(_addShotBtn, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(createBtn,20, SHRINK, SHRINK)
+                        .addComponent(_createBtn, 20, SHRINK, SHRINK)
                 )
                 .addGap(30)
                 .addGroup(
                     gl.createParallelGroup() // video settings group
                         .addGap(10)
-                        .addComponent(fpsLabel, 20, SHRINK, SHRINK)
+                        .addComponent(_fpsLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(fpsSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(_fpsSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(durationLabel, 20, SHRINK, SHRINK)
+                        .addComponent(_durationLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(durationSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(_durationSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(clearBtn,20, SHRINK, SHRINK)
+                        .addComponent(_clearBtn, 20, SHRINK, SHRINK)
                         .addGap(10)
-                        .addComponent(showShotsBtn,20, SHRINK, SHRINK)
+                        .addComponent(_showShotsBtn, 20, SHRINK, SHRINK)
                 )
         );
     }
 
-
-    private fun SetupSpinners() {
+    private fun setupSpinners() {
 
         val removeSpinnerUpDownArrows = fun(spinner: JSpinner) {
             for (component in spinner.components)
@@ -173,24 +175,57 @@ class VideoWindow() : JFrame() {
         }
 
         val widthModel = SpinnerNumberModel(800, 100, 1920, 100);
-        widthSpinner.model = widthModel;
-        removeSpinnerUpDownArrows(widthSpinner);
+        _widthSpinner.model = widthModel;
+        removeSpinnerUpDownArrows(_widthSpinner);
 
         val heightModel = SpinnerNumberModel(600, 100, 1920, 100);
-        heightSpinner.model = heightModel;
-        removeSpinnerUpDownArrows(heightSpinner);
+        _heightSpinner.model = heightModel;
+        removeSpinnerUpDownArrows(_heightSpinner);
 
 
         val fpsModel = SpinnerNumberModel(30, 24, 120, 5);
-        fpsSpinner.model = fpsModel;
-        removeSpinnerUpDownArrows(fpsSpinner);
+        _fpsSpinner.model = fpsModel;
+        removeSpinnerUpDownArrows(_fpsSpinner);
 
 
         val durationModel = SpinnerNumberModel(5, 1, 60, 1);
-        durationSpinner.model = durationModel;
-        removeSpinnerUpDownArrows(durationSpinner);
+        _durationSpinner.model = durationModel;
+        removeSpinnerUpDownArrows(_durationSpinner);
 
 
+    }
+
+    private fun setupEventListeners() {
+
+        _addShotBtn.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent?) {
+                e?.apply {
+                    if (button == 1) {
+                        _videoSettings.AddState(Plane(_plane.xMin, _plane.xMax, _plane.yMin, _plane.yMax));
+                        RefreshShotsCount();
+
+                    }
+                }
+            }
+        });
+
+        _clearBtn.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent?) {
+                e?.apply {
+                    if (button == 1) {
+                        _videoSettings.dispose()
+                        RefreshShotsCount();
+                    }
+                }
+
+            }
+        });
+
+    }
+
+    private fun RefreshShotsCount()
+    {
+        _shotsCountLabel.text = "Shots count: ${_videoSettings.GetKeyShotsCount()}";
     }
 
 }
