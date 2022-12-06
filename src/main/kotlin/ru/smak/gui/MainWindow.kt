@@ -17,13 +17,16 @@ import javax.swing.JFrame
 
 class MainWindow : JFrame() {
     private var rect: Rectangle = Rectangle()
-    val minSz = Dimension(600, 450)
+    val minSz = Dimension(800, 600)
     val mainPanel: GraphicsPanel
+
     init {
+
         val menuBar = JMenuBar().apply {
             add(createColorMenu())
             add(createCtrlZButton())
             add(createAboutButton())
+            add(createRecordBtn());
         }
 
         jMenuBar = menuBar
@@ -45,26 +48,27 @@ class MainWindow : JFrame() {
             })
         }
 
-        mainPanel.addMouseListener(object : MouseAdapter(){
+        mainPanel.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
                 super.mousePressed(e)
                 e?.let {
                     rect.addPoint(it.point)
                 }
             }
+
             override fun mouseReleased(e: MouseEvent?) {
                 super.mouseReleased(e)
-                rect.leftTop?.let {first->
+                rect.leftTop?.let { first ->
                     val g = mainPanel.graphics
                     g.color = Color.BLACK
                     g.setXORMode(Color.WHITE)
                     g.drawRect(first.x, first.y, rect.width, rect.height)
                     g.setPaintMode()
-                    if (rect.isExistst){
-                        val x1 = rect.x1?.let{Converter.xScrToCrt(it, plane)} ?: return@let
-                        val x2 = rect.x2?.let{Converter.xScrToCrt(it, plane)} ?: return@let
-                        val y1 = rect.y1?.let{Converter.yScrToCrt(it, plane)} ?: return@let
-                        val y2 = rect.y2?.let{Converter.yScrToCrt(it, plane)} ?: return@let
+                    if (rect.isExistst) {
+                        val x1 = rect.x1?.let { Converter.xScrToCrt(it, plane) } ?: return@let
+                        val x2 = rect.x2?.let { Converter.xScrToCrt(it, plane) } ?: return@let
+                        val y1 = rect.y1?.let { Converter.yScrToCrt(it, plane) } ?: return@let
+                        val y2 = rect.y2?.let { Converter.yScrToCrt(it, plane) } ?: return@let
                         plane.xEdges = Pair(x1, x2)
                         plane.yEdges = Pair(y1, y2)
                         mainPanel.repaint()
@@ -74,10 +78,10 @@ class MainWindow : JFrame() {
             }
         })
 
-        mainPanel.addMouseMotionListener(object : MouseAdapter(){
+        mainPanel.addMouseMotionListener(object : MouseAdapter() {
             override fun mouseDragged(e: MouseEvent?) {
                 super.mouseDragged(e)
-                e?.let{ curr->
+                e?.let { curr ->
                     rect.leftTop?.let { first ->
                         val g = mainPanel.graphics
                         g.color = Color.BLACK
@@ -107,18 +111,6 @@ class MainWindow : JFrame() {
                     .addGap(8)
             )
         }
-
-        this.addKeyListener(object : KeyAdapter(){
-            override fun keyPressed(e: KeyEvent?) {
-                super.keyPressed(e)
-                if (e != null)
-                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_O)
-                    {
-                        VideoWindow();
-                    }
-            }
-        })
-
     }
 
     class AboutWindow : JFrame() {
@@ -127,6 +119,7 @@ class MainWindow : JFrame() {
         val commonLabel: JLabel
         val pplLabel1: JLabel
         val pplLabel2: JLabel
+        val pplLabel3 = JLabel("Цымбал Данила");
 
 
         init {
@@ -152,6 +145,7 @@ class MainWindow : JFrame() {
                             createParallelGroup()
                                 .addComponent(pplLabel1, SHRINK, SHRINK, SHRINK)
                                 .addComponent(pplLabel2, SHRINK, SHRINK, SHRINK)
+                                .addComponent(pplLabel3, SHRINK, SHRINK, SHRINK)
                         )
                         .addGap(8)
                 )
@@ -168,13 +162,14 @@ class MainWindow : JFrame() {
                             createParallelGroup()
                                 .addComponent(pplLabel2, SHRINK, SHRINK, SHRINK)
                         )
+                        .addGroup(
+                            createParallelGroup()
+                                .addComponent(pplLabel3, SHRINK, SHRINK, SHRINK)
+                        )
                         .addGap(8)
                 )
             }
         }
-
-
-
     }
 
     private fun createAboutButton(): JButton {
@@ -201,8 +196,8 @@ class MainWindow : JFrame() {
         val mClr = JColorChooser()
         val sClr = JColorChooser()
 
-        var firstColor : Color
-        var secondColor : Color
+        var firstColor: Color
+        var secondColor: Color
 
         firstColor = mClr.selectionModel.selectedColor
         secondColor = sClr.selectionModel.selectedColor
@@ -222,16 +217,34 @@ class MainWindow : JFrame() {
 
     }
 
+    private fun createRecordBtn(): JButton
+    {
+        val btn = JButton("Record");
+
+        btn.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent?) {
+                super.mousePressed(e)
+                e?.let {
+                    val frame = VideoWindow()
+                    frame.isVisible = true
+                    frame.defaultCloseOperation = DISPOSE_ON_CLOSE
+
+                }
+            }
+        })
+        return btn;
+    }
+
     override fun setVisible(b: Boolean) {
         super.setVisible(b)
-        mainPanel.graphics.run{
+        mainPanel.graphics.run {
             setXORMode(Color.WHITE)
             drawLine(-100, -100, -101, -100)
             setPaintMode()
         }
     }
 
-    companion object{
+    companion object {
         const val GROW = GroupLayout.DEFAULT_SIZE
         const val SHRINK = GroupLayout.PREFERRED_SIZE
     }
