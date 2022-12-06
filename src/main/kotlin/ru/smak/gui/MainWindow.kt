@@ -1,39 +1,29 @@
 package ru.smak.gui
 
-import ru.smak.graphics.*
-import ru.smak.math.Complex
-import ru.smak.math.Julia
+import ru.smak.graphics.Converter
+import ru.smak.graphics.FractalPainter
+import ru.smak.graphics.Plane
+import ru.smak.graphics.testFunc
 import ru.smak.math.Mandelbrot
 import ru.smak.video.VideoWindow
 import java.awt.Color
 import java.awt.Dimension
-import java.awt.Point
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
+import java.awt.event.*
 import javax.swing.*
-import kotlin.random.Random
 
 import java.awt.event.*
 import javax.swing.GroupLayout
 import javax.swing.JFrame
 
-open class MainWindow : JFrame() {
+class MainWindow : JFrame() {
     private var rect: Rectangle = Rectangle()
-    val minSz = Dimension(800, 600)
+    val minSz = Dimension(600, 450)
     val mainPanel: GraphicsPanel
-
-    private val _videoWindow = VideoWindow(this).apply { isVisible = false; };
-
-    val trgsz = TargetSz()
-
     init {
         val menuBar = JMenuBar().apply {
             add(createColorMenu())
             add(createCtrlZButton())
             add(createAboutButton())
-            add(createRecordBtn());
         }
 
         jMenuBar = menuBar
@@ -56,8 +46,8 @@ open class MainWindow : JFrame() {
                     plane.height = height
                     makeOneToOne(plane, trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
                 }
-        })
-    }
+            })
+        }
 
     menuBar.add(createRecordBtn(plane)); // создаем окошко для создания видео
 
@@ -123,23 +113,22 @@ open class MainWindow : JFrame() {
         }
     })
 
-    layout = GroupLayout(contentPane).apply
-    {
-        setHorizontalGroup(
-            createSequentialGroup()
-                .addGap(8)
-                .addComponent(mainPanel, GROW, GROW, GROW)
-                .addGap(8)
-        )
+        layout = GroupLayout(contentPane).apply {
+            setHorizontalGroup(
+                createSequentialGroup()
+                    .addGap(8)
+                    .addComponent(mainPanel, GROW, GROW, GROW)
+                    .addGap(8)
+            )
 
-        setVerticalGroup(
-            createSequentialGroup()
-                .addGap(8)
-                .addComponent(mainPanel, GROW, GROW, GROW)
-                .addGap(8)
-        )
+            setVerticalGroup(
+                createSequentialGroup()
+                    .addGap(8)
+                    .addComponent(mainPanel, GROW, GROW, GROW)
+                    .addGap(8)
+            )
+        }
     }
-}
 
 class AboutWindow : JFrame() {
     val minSz = Dimension(400, 450)
@@ -200,7 +189,8 @@ class AboutWindow : JFrame() {
     }
 
 
-}
+
+    }
 
 private fun createAboutButton(): JButton {
     val aboutButton = JButton("О программе")
@@ -217,35 +207,35 @@ private fun createAboutButton(): JButton {
     })
     return aboutButton
 
-}
+    }
 
 
-private fun createColorMenu(): JMenu {
-    val colorMenu = JMenu("Выбор цветовой гаммы")
+    private fun createColorMenu(): JMenu {
+        val colorMenu = JMenu("Выбор цветовой гаммы")
 
-    val mClr = JColorChooser()
-    val sClr = JColorChooser()
+        val mClr = JColorChooser()
+        val sClr = JColorChooser()
 
-    var firstColor: Color
-    var secondColor: Color
+        var firstColor : Color
+        var secondColor : Color
 
-    firstColor = mClr.selectionModel.selectedColor
-    secondColor = sClr.selectionModel.selectedColor
+        firstColor = mClr.selectionModel.selectedColor
+        secondColor = sClr.selectionModel.selectedColor
 
-    colorMenu.add(mClr)
-    colorMenu.add(sClr)
+        colorMenu.add(mClr)
+        colorMenu.add(sClr)
 
 
-    return colorMenu
+        return colorMenu
 
-}
+    }
 
-private fun createCtrlZButton(): JButton {
-    val ctrlzButton = JButton("Отменить предыдущее действие")
+    private fun createCtrlZButton(): JButton {
+        val ctrlzButton = JButton("Отменить предыдущее действие")
 
-    return ctrlzButton
+        return ctrlzButton
 
-}
+    }
 
 private fun createRecordBtn(plane: Plane): JButton {
     val btn = JButton("Record");
@@ -273,10 +263,10 @@ override fun setVisible(b: Boolean) {
     }
 }
 
-companion object {
-    const val GROW = GroupLayout.DEFAULT_SIZE
-    const val SHRINK = GroupLayout.PREFERRED_SIZE
-}
+    companion object{
+        const val GROW = GroupLayout.DEFAULT_SIZE
+        const val SHRINK = GroupLayout.PREFERRED_SIZE
+    }
 
 // TODO: for testing video creation
 fun getScreenShot(width: Int, height: Int): BufferedImage {
