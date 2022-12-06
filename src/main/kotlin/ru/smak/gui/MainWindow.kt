@@ -26,7 +26,6 @@ class MainWindow : JFrame() {
             add(createColorMenu())
             add(createCtrlZButton())
             add(createAboutButton())
-            add(createRecordBtn());
         }
 
         jMenuBar = menuBar
@@ -47,6 +46,8 @@ class MainWindow : JFrame() {
                 }
             })
         }
+
+        menuBar.add(createRecordBtn(plane)); // создаем окошко для создания видео
 
         mainPanel.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
@@ -217,7 +218,7 @@ class MainWindow : JFrame() {
 
     }
 
-    private fun createRecordBtn(): JButton
+    private fun createRecordBtn(plane: Plane): JButton
     {
         val btn = JButton("Record");
 
@@ -225,7 +226,7 @@ class MainWindow : JFrame() {
             override fun mousePressed(e: MouseEvent?) {
                 super.mousePressed(e)
                 e?.let {
-                    val frame = VideoWindow()
+                    val frame = VideoWindow(plane)
                     frame.isVisible = true
                     frame.defaultCloseOperation = DISPOSE_ON_CLOSE
 
