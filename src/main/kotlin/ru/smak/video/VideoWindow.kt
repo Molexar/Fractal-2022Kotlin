@@ -8,7 +8,7 @@ import javax.swing.*
 class VideoWindow() : JFrame() {
 
     val minSize = Dimension(400, 300);
-    val mainPanel: JPanel = JPanel().also { it.background = Color.GRAY };
+    val mainPanel: JPanel = JPanel();
 
     val _videoSettings = VideoSettings;
 
