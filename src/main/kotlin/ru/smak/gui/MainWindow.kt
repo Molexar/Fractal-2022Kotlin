@@ -5,6 +5,7 @@ import ru.smak.math.Complex
 import ru.smak.math.Julia
 import ru.smak.math.Mandelbrot
 import java.awt.Button
+import ru.smak.video.VideoWindow
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Point
@@ -49,8 +50,8 @@ open class MainWindow : JFrame() {
         mainPanel.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
                 super.componentResized(e)
-                plane.width=mainPanel.width
-                plane.height=mainPanel.height
+                plane.width=width
+                plane.height=height
                 makeOneToOne(plane,trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
             }
         })
@@ -141,6 +142,7 @@ open class MainWindow : JFrame() {
         val commonLabel: JLabel
         val pplLabel1: JLabel
         val pplLabel2: JLabel
+        val pplLabel3 = JLabel("Цымбал Данила");
 
 
         init {
@@ -167,6 +169,7 @@ open class MainWindow : JFrame() {
                             createParallelGroup()
                                 .addComponent(pplLabel1, SHRINK, SHRINK, SHRINK)
                                 .addComponent(pplLabel2, SHRINK, SHRINK, SHRINK)
+                                .addComponent(pplLabel3, SHRINK, SHRINK, SHRINK)
                         )
                         .addGap(8)
                 )
@@ -182,6 +185,10 @@ open class MainWindow : JFrame() {
                         .addGroup(
                             createParallelGroup()
                                 .addComponent(pplLabel2, SHRINK, SHRINK, SHRINK)
+                        )
+                        .addGroup(
+                            createParallelGroup()
+                                .addComponent(pplLabel3, SHRINK, SHRINK, SHRINK)
                         )
                         .addGap(8)
                 )
@@ -232,6 +239,24 @@ open class MainWindow : JFrame() {
 
         return ctrlzButton
 
+    }
+
+    private fun createRecordBtn(): JButton
+    {
+        val btn = JButton("Record");
+
+        btn.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent?) {
+                super.mousePressed(e)
+                e?.let {
+                    val frame = VideoWindow()
+                    frame.isVisible = true
+                    frame.defaultCloseOperation = DISPOSE_ON_CLOSE
+
+                }
+            }
+        })
+        return btn;
     }
 
     override fun setVisible(b: Boolean) {
