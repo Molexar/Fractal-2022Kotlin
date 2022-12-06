@@ -16,7 +16,7 @@ import kotlin.random.Random
 
 open class MainWindow : JFrame() {
     private var rect: Rectangle = Rectangle()
-    val minSz = Dimension(1000, 450)
+    val minSz = Dimension(600, 450)
     val mainPanel: GraphicsPanel
     val trgsz = TargetSz()
     private var startPoint: Point? = null
@@ -33,7 +33,6 @@ open class MainWindow : JFrame() {
             add(createDynamicalItsButton())
             add(createCtrlZButton())
             add(createAboutButton())
-
         }
 
         jMenuBar = menuBar
@@ -53,18 +52,15 @@ open class MainWindow : JFrame() {
 
         }
 
-
         mainPanel.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
                 super.componentResized(e)
-                plane.width = mainPanel.width
-                plane.height = mainPanel.height
-                makeOneToOne(plane, trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
+                plane.width=mainPanel.width
+                plane.height=mainPanel.height
+                makeOneToOne(plane,trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
             }
         })
-
-        mainPanel.addMouseListener(object : MouseAdapter() {
-
+        mainPanel.addMouseListener(object: MouseAdapter(){
             override fun mouseClicked(e: MouseEvent?) {
                 super.mouseClicked(e)
                 e?.let {
@@ -273,12 +269,14 @@ open class MainWindow : JFrame() {
                     frame.add(Text_Animation())
                     frame.isVisible = true
                     frame.defaultCloseOperation = DISPOSE_ON_CLOSE
+
                 }
             }
         })
         return aboutButton
 
     }
+
 
     private fun createColorMenu(): JMenu {
         val colorMenu = JMenu("Выбор цветовой гаммы")
@@ -329,6 +327,25 @@ open class MainWindow : JFrame() {
         val ctrlzButton = JButton("Отменить предыдущее действие")
 
         return ctrlzButton
+
+    }
+
+    private fun createRecordBtn(): JButton
+    {
+        val btn = JButton("Record");
+
+        btn.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent?) {
+                super.mousePressed(e)
+                e?.let {
+                    val frame = VideoWindow()
+                    frame.isVisible = true
+                    frame.defaultCloseOperation = DISPOSE_ON_CLOSE
+
+                }
+            }
+        })
+        return btn;
     }
 
     override fun setVisible(b: Boolean) {
