@@ -1,29 +1,31 @@
 package ru.smak.video
 
 import kotlinx.coroutines.DisposableHandle
-import ru.smak.graphics.Plane
-import java.awt.image.BufferedImage
 
 // класс параметров для создания видео
 object VideoSettings : DisposableHandle {
 
-    private val _statesList = mutableListOf<Plane>(); // список ключевых состояний (добавляются при нажатии на Add Shot кнопку)
+    private val _shotsList = mutableListOf<Shot>(); // список ключевых снимков (добавляются при нажатии на Add Shot кнопку)
 
-    fun GetKeyShotsCount() = _statesList.size; // todo: maybe rename to GetKeyStatesCount?
-    fun GetKeyShots() = _statesList.toMutableList(); // same
+    var fps = 25;
+    var width = 800;
+    var height = 600;
+    var duration = 5;
+    fun getKeyShotsCount() = _shotsList.size;
+    fun getKeyShots() = _shotsList.toMutableList();
 
-    fun AddState(state: Plane) = _statesList.add(state);
-    fun DeleteState(state: Plane) = _statesList.remove(state);
+    fun addShot(shot: Shot) = _shotsList.add(shot);
+    fun deleteShot(shot: Shot) = _shotsList.remove(shot);
 
-    override fun dispose() {
-        _statesList.clear();
-
+    override fun dispose() { // todo:
+        _shotsList.clear();
     }
 
-    // для последующего отображения на панельке списка ключевых кадров
-    // по нажатии на кнопку Show Shots
-    // todo: fun GetKeyFrames(_statesList) => list<BufferedImages>
+    fun calculateAllShots(): List<Shot>
+    {
+        TODO("Сане; создать список всех кадров, для создания видео по ним")
+    }
 
-    // todo (для сани):  fun GetImagesByKeyStates(_statesList) => list<BufferedImages>
+
 
 }
