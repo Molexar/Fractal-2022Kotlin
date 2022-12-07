@@ -9,11 +9,9 @@ import ru.smak.video.VideoWindow
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.*
+import java.awt.image.BufferedImage
 import javax.swing.*
 
-import java.awt.event.*
-import javax.swing.GroupLayout
-import javax.swing.JFrame
 
 class MainWindow : JFrame() {
     private var rect: Rectangle = Rectangle()
@@ -249,4 +247,17 @@ class MainWindow : JFrame() {
         const val GROW = GroupLayout.DEFAULT_SIZE
         const val SHRINK = GroupLayout.PREFERRED_SIZE
     }
+
+    // TODO: for testing video creation
+     fun getScreenShot(): BufferedImage {
+
+        val image = BufferedImage(
+            mainPanel.width,
+            mainPanel.height+1,
+            BufferedImage.TYPE_INT_RGB
+        )
+        mainPanel.paint(image.graphics)
+        return image
+    }
+
 }
