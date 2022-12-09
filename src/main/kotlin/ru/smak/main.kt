@@ -2,46 +2,55 @@ package ru.smak
 
 import ru.smak.gui.MainWindow
 import ru.smak.video.VideoCreator
-import java.awt.image.BufferedImage
+import java.awt.GridLayout
+import javax.swing.GroupLayout
+import javax.swing.JFrame
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JScrollPane
+
 
 fun main(args: Array<String>) {
     val w = MainWindow().apply { isVisible = true };
     //MainWindow().isVisible = true
 
 
-    val screen = w.getScreenShot();
+    val screen = w.getScreenShot(800,600);
 
-    VideoCreator.createVideo(
-        "C:\\Users\\danil\\Documents\\video.mp4",
-        listOf(
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-            screen,
-        )
-    );
+//    VideoCreator.createVideo(
+//        "video.mp4",
+//        listOf(
+//            screen,
+//        )
+//    );
+
+//    val frame = JFrame("panel demo")
+//    frame.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
+//
+//    val panel = JPanel()
+//    val mainPanel = JPanel();
+//
+//    frame.layout = GroupLayout(frame.contentPane).apply {
+//        setVerticalGroup(
+//            createSequentialGroup()
+//                .addComponent(mainPanel)
+//        )
+//        setHorizontalGroup(
+//            createSequentialGroup()
+//                .addComponent(mainPanel)
+//        )
+//    };
+//
+//    mainPanel.add(panel);
+//    panel.setSize(100, 100)
+//    panel.layout = GridLayout(1000, 1)
+//    for (i in 0..999) panel.add(JLabel("JLabel $i"))
+//
+//    val jsp = JScrollPane(panel)
+//    mainPanel.add(jsp)
+//
+//    frame.setSize(100, 100)
+//    frame.isVisible = true
 
 }
 
