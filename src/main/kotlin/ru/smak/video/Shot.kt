@@ -1,26 +1,34 @@
 package ru.smak.video
 
+import ru.smak.graphics.FractalPainter
 import ru.smak.graphics.Plane
+import ru.smak.graphics.testFunc
+import ru.smak.math.Mandelbrot
 import java.awt.image.BufferedImage
 
 class Shot(plane: Plane) {
 
     val plane: Plane;
-    private var _image: BufferedImage;
+    val image: BufferedImage;
 
     init {
         this.plane = plane;
-        _image = getImageFromPlane();
+        image = getImageFromPlane();
     }
 
     private fun getImageFromPlane(): BufferedImage {
         // todo(для сани): реализовать создания битмапа по плоскости
 
-        val img = BufferedImage(1, 1, 1); // temp
+        val fp = FractalPainter(Mandelbrot()::isInSet, ::testFunc, plane)
 
-        return img;
+        val img = BufferedImage(
+           100,
+           100,
+            BufferedImage.TYPE_INT_RGB
+        )
+        fp.paint(img.graphics)
+        return img
     }
 
-    fun getImage() = _image;
 
 }

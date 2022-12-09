@@ -5,7 +5,7 @@ import ru.smak.graphics.FractalPainter
 import ru.smak.graphics.Plane
 import ru.smak.graphics.testFunc
 import ru.smak.math.Mandelbrot
-import ru.smak.video.VideoWindow
+import ru.smak.video.windows.VideoWindow
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.*
@@ -18,6 +18,7 @@ class MainWindow : JFrame() {
     val minSz = Dimension(800, 600)
     val mainPanel: GraphicsPanel
 
+    private val _videoWindow = VideoWindow().apply { isVisible = false; };
     init {
 
         val menuBar = JMenuBar().apply {
@@ -216,18 +217,17 @@ class MainWindow : JFrame() {
 
     }
 
-    private fun createRecordBtn(plane: Plane): JButton
-    {
+    private fun createRecordBtn(plane: Plane): JButton {
         val btn = JButton("Record");
 
         btn.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
                 super.mousePressed(e)
                 e?.let {
-                    val frame = VideoWindow(plane)
-                    frame.isVisible = true
-                    frame.defaultCloseOperation = DISPOSE_ON_CLOSE
-
+                   _videoWindow.apply {
+                       this.plane = plane;
+                       isVisible = true
+                   }
                 }
             }
         })
@@ -249,11 +249,11 @@ class MainWindow : JFrame() {
     }
 
     // TODO: for testing video creation
-     fun getScreenShot(): BufferedImage {
+    fun getScreenShot(width: Int, height: Int): BufferedImage {
 
         val image = BufferedImage(
-            mainPanel.width,
-            mainPanel.height+1,
+            width,
+            height,
             BufferedImage.TYPE_INT_RGB
         )
         mainPanel.paint(image.graphics)
