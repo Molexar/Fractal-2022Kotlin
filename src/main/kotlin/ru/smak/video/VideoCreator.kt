@@ -31,7 +31,7 @@ object VideoCreator { // класс создания видео
 
     fun createVideo(filename: String, shots: List<Shot>) {
         val z = listOf<BufferedImage>();
-     createVideo(filename, shots.map { it.getImage() }) ;
+     createVideo(filename, shots.map { it.image }) ;
     }
 
 }

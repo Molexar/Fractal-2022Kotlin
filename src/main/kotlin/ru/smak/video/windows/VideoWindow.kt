@@ -1,26 +1,28 @@
-package ru.smak.video
+package ru.smak.video.windows
 
 import ru.smak.graphics.Plane
+import ru.smak.video.Shot
+import ru.smak.video.VideoCreator
+import ru.smak.video.VideoSettings
 import java.awt.Dimension
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.io.File
-import java.io.FileFilter
-import java.io.FilenameFilter
 import javax.swing.*
-import javax.swing.filechooser.FileNameExtensionFilter
 
 
-class VideoWindow(plane: Plane) : JFrame() {
+class VideoWindow() : JFrame() {
 
     private val _minSize = Dimension(400, 300);
     private val _mainPanel: JPanel = JPanel();
-    private val _plane = plane;
 
+    var plane = Plane();
+
+    private var _shotsListWindow = ShotsListWindow().apply { isVisible = false; };
     private val _videoSettings = VideoSettings;
 
     // labels
-    private val _shotsCountLabel = JLabel("Shots count: ${_videoSettings.getKeyShotsCount()}")
+    private val _shotsCountLabel = JLabel("Shots count: ${VideoSettings.getKeyShotsCount()}")
 
     // spinners
     private val _widthLabel = JLabel("Width");
@@ -53,6 +55,7 @@ class VideoWindow(plane: Plane) : JFrame() {
         setupSpinners();
         setupEventListeners();
 
+        //todo: relative to MainWindow
 
         size = _minSize;
         isAlwaysOnTop = true;
@@ -205,8 +208,21 @@ class VideoWindow(plane: Plane) : JFrame() {
             override fun mouseClicked(e: MouseEvent?) {
                 e?.apply {
                     if (button == 1) {
-                        _videoSettings.addShot(Shot(Plane(_plane.xMin, _plane.xMax, _plane.yMin, _plane.yMax)));
+                        VideoSettings.addShot(
+                            Shot(Plane(plane.xMin, plane.xMax, plane.yMin, plane.yMax)
+                                .apply {
+                                    width = 100;
+                                    height = 100;
+                                })
+                        );
                         RefreshShotsCount();
+
+                        _shotsListWindow.setThumbnails(_videoSettings.getKeyShots());
+                        _shotsListWindow.repaint();
+                        _shotsListWindow.isVisible = true;
+
+                        // todo: show dialog only if it's needed?
+
                     }
                 }
             }
@@ -216,11 +232,13 @@ class VideoWindow(plane: Plane) : JFrame() {
             override fun mouseClicked(e: MouseEvent?) {
                 e?.apply {
                     if (button == 1) {
-                        _videoSettings.dispose()
+                        VideoSettings.dispose();
+                        _shotsListWindow.dispose();
+                        _shotsListWindow.repaint();
+                        _shotsListWindow.isVisible = true;
                         RefreshShotsCount();
                     }
                 }
-
             }
         })
 
@@ -228,31 +246,42 @@ class VideoWindow(plane: Plane) : JFrame() {
             override fun mouseClicked(e: MouseEvent?) {
                 e?.apply {
                     if (button == 1) {
-                        _videoSettings.width = _widthSpinner.value as Int;
-                        _videoSettings.height = _heightSpinner.value as Int;
-                        _videoSettings.fps = _fpsSpinner.value as Int;
-                        _videoSettings.duration = _durationSpinner.value as Int;
+                        VideoSettings.width = _widthSpinner.value as Int;
+                        VideoSettings.height = _heightSpinner.value as Int;
+                        VideoSettings.fps = _fpsSpinner.value as Int;
+                        VideoSettings.duration = _durationSpinner.value as Int;
 
                         //val filter: FileFilter = FileFilter {  }("MP3 File", "mp3") // TODO:
 
 
-                        val fileChooser = JFileChooser().apply { selectedFile = File("video.mp4")};
+                        val fileChooser = JFileChooser().apply { selectedFile = File("video.mp4") };
 
                         fileChooser.showSaveDialog(_mainPanel);
 
                         val filename = fileChooser.selectedFile.absolutePath;
 
                         // todo: automatic .mp4 fill
-                        VideoCreator.createVideo(filename,_videoSettings.calculateAllShots())
+                        VideoCreator.createVideo(filename, VideoSettings.calculateAllShots())
                     }
                 }
             }
         });
 
+        _showShotsBtn.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent?) {
+                e?.apply {
+                    if (button == 1) {
+                        _shotsListWindow.isVisible = true;
+                    };
+                }
+            }
+
+        });
+
     }
 
     private fun RefreshShotsCount() {
-        _shotsCountLabel.text = "Shots count: ${_videoSettings.getKeyShotsCount()}";
+        _shotsCountLabel.text = "Shots count: ${VideoSettings.getKeyShotsCount()}";
     }
 
 }
