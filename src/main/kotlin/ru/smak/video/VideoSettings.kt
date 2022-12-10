@@ -17,7 +17,7 @@ object VideoSettings : DisposableHandle {
     fun addShot(shot: Shot) = _shotsList.add(shot);
     fun deleteShot(shot: Shot) = _shotsList.remove(shot);
 
-    override fun dispose() { // todo:
+    override fun dispose() {
         _shotsList.clear();
     }
 
