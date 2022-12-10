@@ -18,7 +18,7 @@ class MainWindow : JFrame() {
     val minSz = Dimension(800, 600)
     val mainPanel: GraphicsPanel
 
-    private val _videoWindow = VideoWindow().apply { isVisible = false; };
+    private val _videoWindow = VideoWindow(this).apply { isVisible = false; };
     init {
 
         val menuBar = JMenuBar().apply {

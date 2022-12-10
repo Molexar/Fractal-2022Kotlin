@@ -14,17 +14,19 @@ import java.awt.event.MouseEvent
 import javax.swing.*
 
 
-class ShotsListWindow : JFrame(), DisposableHandle {
+class ShotsListWindow(frame: JFrame) : JFrame(), DisposableHandle {
 
-
-    private val _minSize = Dimension(355, 420);
+    private val _minSize = Dimension(355, 410);
     private var _thumbnails = mutableListOf<ShotThumbnail>();
 
-    private val _mainPanel = JPanel().apply { background = Color.RED; };
-    private val _thumbsPanel = JPanel().apply { background = Color.GREEN; };
-    private val _controlPanel = JPanel().apply { background = Color.BLUE };
+    private val _mainPanel = JPanel();
+    private val _thumbsPanel = JPanel();
+    private val _controlPanel = JPanel();
 
-    private val _deleteBtn = JButton("Delete");
+    private val _deleteBtn = JButton("Delete").apply {
+        setFocusPainted(false);
+        setContentAreaFilled(false);
+    };
 
     companion object {
         val SHRINK = GroupLayout.PREFERRED_SIZE;
@@ -40,11 +42,10 @@ class ShotsListWindow : JFrame(), DisposableHandle {
         setupScrollbar();
         setupEventListeners();
 
-        setLocationRelativeTo(null); //todo: relative to VideoWindow
+        setLocationRelativeTo(frame);
     }
 
     private fun setupEventListeners() {
-
 
         _deleteBtn.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
@@ -53,15 +54,13 @@ class ShotsListWindow : JFrame(), DisposableHandle {
                         clearThumbs();
                         for (selected in _thumbnails.filter { it.isSelected }) {
                             VideoSettings.deleteShot(selected.shot);
-                            //_thumbsPanel.remove(selected);
                             _thumbnails.remove(selected);
                         }
                         setupComponents();
-                        // TODO
 
-                        // setThumbnails(_thumbnails.takeWhile { !it.isSelected }.toMutableList())
-                        // todo: repaint videoWindow
+                        VideoWindow.refreshShotsCount(_thumbnails.size);
                         _thumbsPanel.repaint();
+                        isVisible = true;
                     }
                 }
             }
@@ -70,16 +69,20 @@ class ShotsListWindow : JFrame(), DisposableHandle {
 
     private fun setupScrollbar() { // todo
 
-
-        val jsp = JScrollPane(_thumbsPanel);
-
-        jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        val jsp = JScrollPane(_thumbsPanel)
+            .apply{setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);};
 
         _mainPanel.add(jsp);
-        add(_mainPanel);
+        add(_mainPanel)
     }
 
     private fun setupLayout() {
+
+        _thumbsPanel.layout = FlowLayout(0, 10, 10);
+        _controlPanel.apply {
+            layout = FlowLayout(0);
+            add(_deleteBtn)
+        };
 
         _mainPanel.layout = GroupLayout(_mainPanel).apply {
             setVerticalGroup(
@@ -94,27 +97,14 @@ class ShotsListWindow : JFrame(), DisposableHandle {
                     .addComponent(_controlPanel, GROW, GROW, GROW)
             )
         }
-
-        _thumbsPanel.layout = FlowLayout(0, 10, 10);
-        _controlPanel.apply {
-            layout = FlowLayout(0);
-            add(_deleteBtn)
-        };
     }
 
-    @JvmName("setThumbnails1")
     fun setThumbnails(shots: MutableList<Shot>) {
         clearThumbs();
         _thumbnails = shots.map { ShotThumbnail(it) }.toMutableList();
         setupComponents();
     }
 
-    @JvmName("setThumbnails2")
-    fun setThumbnails(thumbs: MutableList<ShotThumbnail>) {
-        clearThumbs();
-        _thumbnails = thumbs;
-        setupComponents();
-    }
 
     private fun setupComponents() {
         for (thumb in _thumbnails)
@@ -126,7 +116,7 @@ class ShotsListWindow : JFrame(), DisposableHandle {
             _thumbsPanel.remove(thumb);
     }
 
-    override fun dispose() { // todo:
+    override fun dispose() {
         clearThumbs();
         _thumbnails.clear();
     }

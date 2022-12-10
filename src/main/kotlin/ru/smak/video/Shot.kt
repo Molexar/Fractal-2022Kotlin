@@ -17,7 +17,6 @@ class Shot(plane: Plane) {
     }
 
     private fun getImageFromPlane(): BufferedImage {
-        // todo(для сани): реализовать создания битмапа по плоскости
 
         val fp = FractalPainter(Mandelbrot()::isInSet, ::testFunc, plane)
 
