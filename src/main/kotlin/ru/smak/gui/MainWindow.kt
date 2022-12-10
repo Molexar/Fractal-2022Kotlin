@@ -5,10 +5,11 @@ import ru.smak.graphics.FractalPainter
 import ru.smak.graphics.Plane
 import ru.smak.graphics.testFunc
 import ru.smak.math.Mandelbrot
-import ru.smak.video.VideoWindow
+import ru.smak.video.windows.VideoWindow
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.*
+import java.awt.image.BufferedImage
 import javax.swing.*
 
 import java.awt.event.*
@@ -17,9 +18,12 @@ import javax.swing.JFrame
 
 class MainWindow : JFrame() {
     private var rect: Rectangle = Rectangle()
-    val minSz = Dimension(600, 450)
+    val minSz = Dimension(800, 600)
     val mainPanel: GraphicsPanel
+
+    private val _videoWindow = VideoWindow().apply { isVisible = false; };
     init {
+
         val menuBar = JMenuBar().apply {
             add(createColorMenu())
             add(createCtrlZButton())
@@ -139,73 +143,70 @@ class AboutWindow : JFrame() {
     val pplLabel3 = JLabel("Цымбал Данила");
 
 
-    init {
-        commonLabel = JLabel()
-        commonLabel.text = "Над проектом работали : "
-        pplLabel1 = JLabel()
-        pplLabel1.text = "Потасьев Никита"
-        pplLabel2 = JLabel()
-        pplLabel2.text = "Щербанев Дмитрий"
+        init {
+            commonLabel = JLabel()
+            commonLabel.text = "Над проектом работали : "
+            pplLabel1 = JLabel()
+            pplLabel1.text = "Потасьев Никита"
+            pplLabel2 = JLabel()
+            pplLabel2.text = "Щербанев Дмитрий"
 
-        minimumSize = minSz
+            minimumSize = minSz
 
-        layout = GroupLayout(contentPane).apply {
-            setHorizontalGroup(
-                createSequentialGroup()
-                    .addGap(8)
-                    .addGroup(
-                        createParallelGroup()
-                            .addComponent(commonLabel, SHRINK, SHRINK, SHRINK)
-                    )
-                    .addGap(16)
-                    .addGroup(
-                        createParallelGroup()
-                            .addComponent(pplLabel1, SHRINK, SHRINK, SHRINK)
-                            .addComponent(pplLabel2, SHRINK, SHRINK, SHRINK)
-                            .addComponent(pplLabel3, SHRINK, SHRINK, SHRINK)
-                    )
-                    .addGap(8)
-            )
+            layout = GroupLayout(contentPane).apply {
+                setHorizontalGroup(
+                    createSequentialGroup()
+                        .addGap(8)
+                        .addGroup(
+                            createParallelGroup()
+                                .addComponent(commonLabel, SHRINK, SHRINK, SHRINK)
+                        )
+                        .addGap(16)
+                        .addGroup(
+                            createParallelGroup()
+                                .addComponent(pplLabel1, SHRINK, SHRINK, SHRINK)
+                                .addComponent(pplLabel2, SHRINK, SHRINK, SHRINK)
+                                .addComponent(pplLabel3, SHRINK, SHRINK, SHRINK)
+                        )
+                        .addGap(8)
+                )
 
-            setVerticalGroup(
-                createSequentialGroup()
-                    .addGap(8)
-                    .addGroup(
-                        createParallelGroup()
-                            .addComponent(commonLabel, SHRINK, SHRINK, SHRINK)
-                            .addComponent(pplLabel1, SHRINK, SHRINK, SHRINK)
-                    )
-                    .addGroup(
-                        createParallelGroup()
-                            .addComponent(pplLabel2, SHRINK, SHRINK, SHRINK)
-                    )
-                    .addGroup(
-                        createParallelGroup()
-                            .addComponent(pplLabel3, SHRINK, SHRINK, SHRINK)
-                    )
-                    .addGap(8)
-            )
-        }
-    }
-
-
-
-    }
-
-private fun createAboutButton(): JButton {
-    val aboutButton = JButton("О программе")
-    aboutButton.addMouseListener(object : MouseAdapter() {
-        override fun mousePressed(e: MouseEvent?) {
-            super.mousePressed(e)
-            e?.let {
-                val frame = AboutWindow()
-                frame.isVisible = true
-                frame.defaultCloseOperation = DISPOSE_ON_CLOSE
-
+                setVerticalGroup(
+                    createSequentialGroup()
+                        .addGap(8)
+                        .addGroup(
+                            createParallelGroup()
+                                .addComponent(commonLabel, SHRINK, SHRINK, SHRINK)
+                                .addComponent(pplLabel1, SHRINK, SHRINK, SHRINK)
+                        )
+                        .addGroup(
+                            createParallelGroup()
+                                .addComponent(pplLabel2, SHRINK, SHRINK, SHRINK)
+                        )
+                        .addGroup(
+                            createParallelGroup()
+                                .addComponent(pplLabel3, SHRINK, SHRINK, SHRINK)
+                        )
+                        .addGap(8)
+                )
             }
         }
-    })
-    return aboutButton
+    }
+
+    private fun createAboutButton(): JButton {
+        val aboutButton = JButton("О программе")
+        aboutButton.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent?) {
+                super.mousePressed(e)
+                e?.let {
+                    val frame = AboutWindow()
+                    frame.isVisible = true
+                    frame.defaultCloseOperation = DISPOSE_ON_CLOSE
+
+                }
+            }
+        })
+        return aboutButton
 
     }
 
@@ -216,8 +217,8 @@ private fun createAboutButton(): JButton {
         val mClr = JColorChooser()
         val sClr = JColorChooser()
 
-        var firstColor : Color
-        var secondColor : Color
+        var firstColor: Color
+        var secondColor: Color
 
         firstColor = mClr.selectionModel.selectedColor
         secondColor = sClr.selectionModel.selectedColor
@@ -237,48 +238,47 @@ private fun createAboutButton(): JButton {
 
     }
 
-private fun createRecordBtn(plane: Plane): JButton {
-    val btn = JButton("Record");
+    private fun createRecordBtn(plane: Plane): JButton {
+        val btn = JButton("Record");
 
-    btn.addMouseListener(object : MouseAdapter() {
-        override fun mousePressed(e: MouseEvent?) {
-            super.mousePressed(e)
-            e?.let {
-                _videoWindow.apply {
-                    this.plane = plane;
-                    isVisible = true
+        btn.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent?) {
+                super.mousePressed(e)
+                e?.let {
+                   _videoWindow.apply {
+                       this.plane = plane;
+                       isVisible = true
+                   }
                 }
             }
-        }
-    })
-    return btn;
-}
-
-override fun setVisible(b: Boolean) {
-    super.setVisible(b)
-    mainPanel.graphics.run {
-        setXORMode(Color.WHITE)
-        drawLine(-100, -100, -101, -100)
-        setPaintMode()
+        })
+        return btn;
     }
-}
 
-    companion object{
+    override fun setVisible(b: Boolean) {
+        super.setVisible(b)
+        mainPanel.graphics.run {
+            setXORMode(Color.WHITE)
+            drawLine(-100, -100, -101, -100)
+            setPaintMode()
+        }
+    }
+
+    companion object {
         const val GROW = GroupLayout.DEFAULT_SIZE
         const val SHRINK = GroupLayout.PREFERRED_SIZE
     }
 
-// TODO: for testing video creation
-fun getScreenShot(width: Int, height: Int): BufferedImage {
+    // TODO: for testing video creation
+    fun getScreenShot(width: Int, height: Int): BufferedImage {
 
-    val image = BufferedImage(
-        width,
-        height,
-        BufferedImage.TYPE_INT_RGB
-    )
-    mainPanel.paint(image.graphics)
-    return image
-}
-
+        val image = BufferedImage(
+            width,
+            height,
+            BufferedImage.TYPE_INT_RGB
+        )
+        mainPanel.paint(image.graphics)
+        return image
+    }
 
 }
