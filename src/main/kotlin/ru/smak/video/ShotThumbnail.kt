@@ -24,10 +24,9 @@ class ShotThumbnail(val shot: Shot) : JPanel() {
     {
         isSelected = true;
         border = BorderFactory.createLineBorder(Color.RED,2);
-
     }
 
-    fun unselect() // todo: bug
+    fun unselect()
     {
         isSelected = false;
         border = null;

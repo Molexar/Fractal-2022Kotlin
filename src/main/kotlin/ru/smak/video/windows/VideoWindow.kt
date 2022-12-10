@@ -11,18 +11,16 @@ import java.io.File
 import javax.swing.*
 
 
-class VideoWindow() : JFrame() {
+class VideoWindow(frame: JFrame) : JFrame() {
 
-    private val _minSize = Dimension(400, 300);
+    private val _minSize = Dimension(260, 300);
     private val _mainPanel: JPanel = JPanel();
 
     var plane = Plane();
 
-    private var _shotsListWindow = ShotsListWindow().apply { isVisible = false; };
+    private var _shotsListWindow = ShotsListWindow(this).apply { isVisible = false; };
     private val _videoSettings = VideoSettings;
 
-    // labels
-    private val _shotsCountLabel = JLabel("Shots count: ${VideoSettings.getKeyShotsCount()}")
 
     // spinners
     private val _widthLabel = JLabel("Width");
@@ -38,15 +36,24 @@ class VideoWindow() : JFrame() {
     private val _durationSpinner = JSpinner();
 
     // buttons
-    private val _addShotBtn = JButton("Add Shot");
-    private val _clearBtn = JButton("Clear");
-    private val _createBtn = JButton("Create");
-    private val _showShotsBtn = JButton("Show Shots");
+    private val _addShotBtn = JButton("Add Shot").apply { setFocusPainted(false);setContentAreaFilled(false); };
+    private val _clearBtn = JButton("Clear").apply { setFocusPainted(false);setContentAreaFilled(false); };
+    private val _createBtn = JButton("Create").apply { setFocusPainted(false);setContentAreaFilled(false); };
+    private val _showShotsBtn = JButton("Show Shots").apply { setFocusPainted(false);setContentAreaFilled(false); };
 
     // static
     companion object {
         val SHRINK = GroupLayout.PREFERRED_SIZE
         val GROW = GroupLayout.DEFAULT_SIZE
+
+        val shotsCountLabel = JLabel("Shots count: ${VideoSettings.getKeyShotsCount()}")
+
+        fun refreshShotsCount(count: Int = -1) {
+
+            if (count != -1) shotsCountLabel.text = "Shots count: ${count}";
+            else shotsCountLabel.text = "Shots count: ${VideoSettings.getKeyShotsCount()}";
+        }
+
     }
 
     init {
@@ -55,10 +62,9 @@ class VideoWindow() : JFrame() {
         setupSpinners();
         setupEventListeners();
 
-        //todo: relative to MainWindow
+        setLocationRelativeTo(frame);
 
         size = _minSize;
-        isAlwaysOnTop = true;
         isVisible = true;
     }
 
@@ -109,7 +115,7 @@ class VideoWindow() : JFrame() {
                         .addGap(10)
                         .addComponent(_createBtn, 20, SHRINK, SHRINK)
                         .addGap(10, 10, Int.MAX_VALUE)
-                        .addComponent(_shotsCountLabel, 20, SHRINK, SHRINK)
+                        .addComponent(shotsCountLabel, 20, SHRINK, SHRINK)
                 )
                 .addGap(30)
                 .addGroup(
@@ -141,7 +147,7 @@ class VideoWindow() : JFrame() {
                 .addGroup(
                     gl.createParallelGroup() // resolution spinners group
                         .addGap(10)
-                        .addComponent(_shotsCountLabel, 20, SHRINK, SHRINK)
+                        .addComponent(shotsCountLabel, 20, SHRINK, SHRINK)
                         .addComponent(_widthLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
                         .addComponent(_widthSpinner, 20, SHRINK, SHRINK)
@@ -215,7 +221,7 @@ class VideoWindow() : JFrame() {
                                     height = 100;
                                 })
                         );
-                        RefreshShotsCount();
+                        refreshShotsCount();
 
                         _shotsListWindow.setThumbnails(_videoSettings.getKeyShots());
                         _shotsListWindow.repaint();
@@ -236,7 +242,7 @@ class VideoWindow() : JFrame() {
                         _shotsListWindow.dispose();
                         _shotsListWindow.repaint();
                         _shotsListWindow.isVisible = true;
-                        RefreshShotsCount();
+                        refreshShotsCount();
                     }
                 }
             }
@@ -258,9 +264,11 @@ class VideoWindow() : JFrame() {
 
                         fileChooser.showSaveDialog(_mainPanel);
 
-                        val filename = fileChooser.selectedFile.absolutePath;
+                        var filename = fileChooser.selectedFile.absolutePath;
 
-                        // todo: automatic .mp4 fill
+                        if(!filename.contains(".mp4"))
+                            filename = filename.plus(".mp4");
+
                         VideoCreator.createVideo(filename, VideoSettings.calculateAllShots())
                     }
                 }
@@ -280,8 +288,5 @@ class VideoWindow() : JFrame() {
 
     }
 
-    private fun RefreshShotsCount() {
-        _shotsCountLabel.text = "Shots count: ${VideoSettings.getKeyShotsCount()}";
-    }
 
 }
