@@ -19,8 +19,11 @@ import kotlin.random.Random
 
 open class MainWindow : JFrame() {
     private var rect: Rectangle = Rectangle()
-    val minSz = Dimension(600, 450)
+    val minSz = Dimension(800, 600)
     val mainPanel: GraphicsPanel
+
+    private val _videoWindow = VideoWindow(this).apply { isVisible = false; };
+
     val trgsz = TargetSz()
 
     init {
@@ -55,7 +58,13 @@ open class MainWindow : JFrame() {
                 makeOneToOne(plane,trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
             }
         })
-        mainPanel.addMouseListener(object: MouseAdapter(){
+
+
+    menuBar.add(createRecordBtn(plane)); // создаем окошко для создания видео
+
+
+    mainPanel.addMouseListener(
+    object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
                 super.mouseClicked(e)
                 e?.let {
@@ -70,7 +79,7 @@ open class MainWindow : JFrame() {
             }
         })
 
-        mainPanel.addMouseListener(object : MouseAdapter() {
+        mainPanel.addMouseListener(object : MouseAdapter(){
             override fun mousePressed(e: MouseEvent?) {
                 super.mousePressed(e)
                 e?.let {
@@ -80,17 +89,17 @@ open class MainWindow : JFrame() {
 
             override fun mouseReleased(e: MouseEvent?) {
                 super.mouseReleased(e)
-                rect.leftTop?.let { first ->
+                rect.leftTop?.let {first->
                     val g = mainPanel.graphics
                     g.color = Color.BLACK
                     g.setXORMode(Color.WHITE)
                     g.drawRect(first.x, first.y, rect.width, rect.height)
                     g.setPaintMode()
-                    if (rect.isExistst) {
-                        val x1 = rect.x1?.let { Converter.xScrToCrt(it, plane) } ?: return@let
-                        val x2 = rect.x2?.let { Converter.xScrToCrt(it, plane) } ?: return@let
-                        val y1 = rect.y1?.let { Converter.yScrToCrt(it, plane) } ?: return@let
-                        val y2 = rect.y2?.let { Converter.yScrToCrt(it, plane) } ?: return@let
+                    if (rect.isExistst){
+                        val x1 = rect.x1?.let{Converter.xScrToCrt(it, plane)} ?: return@let
+                        val x2 = rect.x2?.let{Converter.xScrToCrt(it, plane)} ?: return@let
+                        val y1 = rect.y1?.let{Converter.yScrToCrt(it, plane)} ?: return@let
+                        val y2 = rect.y2?.let{Converter.yScrToCrt(it, plane)} ?: return@let
                         makeOneToOne(plane,x1,x2,y1,y2,mainPanel.size,trgsz)//Делает панель мастштабом 1 к 1 и меняет trgsz
                         mainPanel.repaint()
                     }
@@ -99,22 +108,22 @@ open class MainWindow : JFrame() {
             }
         })
 
-        mainPanel.addMouseMotionListener(object : MouseAdapter() {
+        mainPanel.addMouseMotionListener(object : MouseAdapter(){
             override fun mouseDragged(e: MouseEvent?) {
                 super.mouseDragged(e)
 
-                    e?.let { curr ->
-                        rect.leftTop?.let { first ->
-                            val g = mainPanel.graphics
-                            g.color = Color.BLACK
-                            g.setXORMode(Color.WHITE)
-                            if (rect.isExistst)
-                                g.drawRect(first.x, first.y, rect.width, rect.height)
-                            rect.addPoint(curr.point)
-                            rect.leftTop?.let { f -> g.drawRect(f.x, f.y, rect.width, rect.height) }
-                            g.setPaintMode()
-                        }
+                e?.let{ curr->
+                    rect.leftTop?.let { first ->
+                        val g = mainPanel.graphics
+                        g.color = Color.BLACK
+                        g.setXORMode(Color.WHITE)
+                        if (rect.isExistst)
+                            g.drawRect(first.x, first.y, rect.width, rect.height)
+                        rect.addPoint(curr.point)
+                        rect.leftTop?.let { f -> g.drawRect(f.x, f.y, rect.width, rect.height) }
+                        g.setPaintMode()
                     }
+                }
             }
         })
 
@@ -152,7 +161,6 @@ open class MainWindow : JFrame() {
             pplLabel1.text = "Потасьев Никита"
             pplLabel2 = JLabel()
             pplLabel2.text = "Щербанев Дмитрий"
-
 
             minimumSize = minSz
 
@@ -220,8 +228,8 @@ open class MainWindow : JFrame() {
         val mClr = JColorChooser()
         val sClr = JColorChooser()
 
-        var firstColor : Color
-        var secondColor : Color
+        var firstColor: Color
+        var secondColor: Color
 
         firstColor = mClr.selectionModel.selectedColor
         secondColor = sClr.selectionModel.selectedColor
@@ -241,23 +249,22 @@ open class MainWindow : JFrame() {
 
     }
 
-    private fun createRecordBtn(): JButton
-    {
-        val btn = JButton("Record");
+private fun createRecordBtn(plane: Plane): JButton {
+    val btn = JButton("Record");
 
-        btn.addMouseListener(object : MouseAdapter() {
-            override fun mousePressed(e: MouseEvent?) {
-                super.mousePressed(e)
-                e?.let {
-                    val frame = VideoWindow()
-                    frame.isVisible = true
-                    frame.defaultCloseOperation = DISPOSE_ON_CLOSE
-
+    btn.addMouseListener(object : MouseAdapter() {
+        override fun mousePressed(e: MouseEvent?) {
+            super.mousePressed(e)
+            e?.let {
+                _videoWindow.apply {
+                    this.plane = plane;
+                    isVisible = true
                 }
             }
-        })
-        return btn;
-    }
+        }
+    })
+    return btn;
+}
 
     override fun setVisible(b: Boolean) {
         super.setVisible(b)
@@ -272,4 +279,18 @@ open class MainWindow : JFrame() {
         const val GROW = GroupLayout.DEFAULT_SIZE
         const val SHRINK = GroupLayout.PREFERRED_SIZE
     }
+
+// TODO: for testing video creation
+fun getScreenShot(width: Int, height: Int): BufferedImage {
+
+    val image = BufferedImage(
+        width,
+        height,
+        BufferedImage.TYPE_INT_RGB
+    )
+    mainPanel.paint(image.graphics)
+    return image
+}
+
+
 }
