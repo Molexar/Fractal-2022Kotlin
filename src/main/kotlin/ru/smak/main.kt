@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
     //MainWindow().isVisible = true
 
 
-    val screen = w.getScreenShot(800,600);
+    //val screen = w.getScreenShot(800,600);
 
 //    VideoCreator.createVideo(
 //        "video.mp4",

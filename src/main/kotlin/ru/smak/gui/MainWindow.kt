@@ -1,11 +1,10 @@
 package ru.smak.gui
 
-import ru.smak.graphics.Converter
-import ru.smak.graphics.FractalPainter
-import ru.smak.graphics.Plane
-import ru.smak.graphics.testFunc
+import ru.smak.graphics.*
+import ru.smak.math.Complex
+import ru.smak.math.Julia
 import ru.smak.math.Mandelbrot
-import ru.smak.video.VideoWindow
+import ru.smak.video.windows.VideoWindow
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.*
@@ -18,12 +17,14 @@ open class MainWindow : JFrame() {
     private var rect: Rectangle = Rectangle()
     val minSz = Dimension(800, 600)
     val mainPanel: GraphicsPanel
+
+    private val _videoWindow = VideoWindow(this).apply { isVisible = false; };
+
     init {
         val menuBar = JMenuBar().apply {
             add(createColorMenu())
             add(createCtrlZButton())
             add(createAboutButton())
-            add(createRecordBtn());
         }
 
         jMenuBar = menuBar
@@ -34,7 +35,6 @@ open class MainWindow : JFrame() {
         val colorScheme = ColorFuncs[Random.nextInt(ColorFuncs.size)]
         val plane = Plane(-2.0, 1.0, -1.0, 1.0)
         val fp = FractalPainter(Mandelbrot()::isInSet, colorScheme, plane)
-        //val fpj = FractalPainter(Julia()::isInSet, ::testFunc, plane)
         mainPanel = GraphicsPanel().apply {
             background = Color.WHITE
             addPainter(fp)
@@ -46,6 +46,9 @@ open class MainWindow : JFrame() {
                 }
             })
         }
+
+        menuBar.add(createRecordBtn(plane)); // создаем окошко для создания видео
+
 
         mainPanel.addMouseListener(object: MouseAdapter(){
             override fun mouseClicked(e: MouseEvent?) {
@@ -228,18 +231,17 @@ open class MainWindow : JFrame() {
 
     }
 
-    private fun createRecordBtn(): JButton
-    {
+    private fun createRecordBtn(plane: Plane): JButton {
         val btn = JButton("Record");
 
         btn.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
                 super.mousePressed(e)
                 e?.let {
-                    val frame = VideoWindow()
-                    frame.isVisible = true
-                    frame.defaultCloseOperation = DISPOSE_ON_CLOSE
-
+                    _videoWindow.apply {
+                        this.plane = plane;
+                        isVisible = true
+                    }
                 }
             }
         })
@@ -261,15 +263,16 @@ open class MainWindow : JFrame() {
     }
 
     // TODO: for testing video creation
-     fun getScreenShot(): BufferedImage {
+    fun getScreenShot(width: Int, height: Int): BufferedImage {
 
         val image = BufferedImage(
-            mainPanel.width,
-            mainPanel.height+1,
+            width,
+            height,
             BufferedImage.TYPE_INT_RGB
         )
         mainPanel.paint(image.graphics)
         return image
     }
+
 
 }
