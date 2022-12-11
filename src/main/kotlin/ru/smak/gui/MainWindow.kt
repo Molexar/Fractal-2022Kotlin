@@ -4,7 +4,11 @@ import ru.smak.graphics.*
 import ru.smak.math.Complex
 import ru.smak.math.Julia
 import ru.smak.math.Mandelbrot
-import java.awt.*
+import java.awt.Button
+import ru.smak.video.ui.windows.VideoWindow
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.Point
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.awt.event.MouseAdapter
@@ -16,8 +20,11 @@ import kotlin.random.Random
 
 open class MainWindow : JFrame() {
     private var rect: Rectangle = Rectangle()
-    val minSz = Dimension(600, 450)
+    val minSz = Dimension(800, 600)
     val mainPanel: GraphicsPanel
+
+    private val _videoWindow = VideoWindow(this).apply { isVisible = false; };
+
     val trgsz = TargetSz()
     private var startPoint: Point? = null
     private var numButtonPressed: Int = 0
@@ -60,7 +67,13 @@ open class MainWindow : JFrame() {
                 makeOneToOne(plane,trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
             }
         })
-        mainPanel.addMouseListener(object: MouseAdapter(){
+
+
+    menuBar.add(createRecordBtn(plane)); // создаем окошко для создания видео
+
+
+    mainPanel.addMouseListener(
+    object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
                 super.mouseClicked(e)
                 e?.let {
@@ -223,7 +236,8 @@ open class MainWindow : JFrame() {
                     "Иванов Владислав \n" +
                     "Хусаинов Данил \n" +
                     "Даянов Рамиль \n" +
-                    "Королева Ульяна"
+                    "Королева Ульяна \n" +
+                    "Цымбал Данила"
 
 
             minimumSize = minSz
@@ -330,23 +344,22 @@ open class MainWindow : JFrame() {
 
     }
 
-    private fun createRecordBtn(): JButton
-    {
-        val btn = JButton("Record");
+private fun createRecordBtn(plane: Plane): JButton {
+    val btn = JButton("Record");
 
-        btn.addMouseListener(object : MouseAdapter() {
-            override fun mousePressed(e: MouseEvent?) {
-                super.mousePressed(e)
-                e?.let {
-                    val frame = VideoWindow()
-                    frame.isVisible = true
-                    frame.defaultCloseOperation = DISPOSE_ON_CLOSE
-
+    btn.addMouseListener(object : MouseAdapter() {
+        override fun mousePressed(e: MouseEvent?) {
+            super.mousePressed(e)
+            e?.let {
+                _videoWindow.apply {
+                    this.plane = plane;
+                    isVisible = true
                 }
             }
-        })
-        return btn;
-    }
+        }
+    })
+    return btn;
+}
 
     override fun setVisible(b: Boolean) {
         super.setVisible(b)
@@ -361,4 +374,18 @@ open class MainWindow : JFrame() {
         const val GROW = GroupLayout.DEFAULT_SIZE
         const val SHRINK = GroupLayout.PREFERRED_SIZE
     }
+
+// TODO: for testing video creation
+fun getScreenShot(width: Int, height: Int): BufferedImage {
+
+    val image = BufferedImage(
+        width,
+        height,
+        BufferedImage.TYPE_INT_RGB
+    )
+    mainPanel.paint(image.graphics)
+    return image
+}
+
+
 }
