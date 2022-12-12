@@ -1,4 +1,4 @@
-package ru.smak.video
+package ru.smak.video.entities
 
 import ru.smak.graphics.FractalPainter
 import ru.smak.graphics.Plane

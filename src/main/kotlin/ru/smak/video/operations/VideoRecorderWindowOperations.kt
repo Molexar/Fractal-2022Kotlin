@@ -1,14 +1,16 @@
 package ru.smak.video.operations
 
 import ru.smak.graphics.Plane
-import ru.smak.video.Shot
-import ru.smak.video.VideoSettings
-import ru.smak.video.dto.CreateVideoDTO
+import ru.smak.video.entities.Shot
+import ru.smak.video.objects.VideoSettings
+import ru.smak.video.models.CreateVideoModel
 import ru.smak.video.services.VideoRecorderWindowService
 import ru.smak.video.ui.windows.ShotsListWindow
 import ru.smak.video.ui.windows.VideoWindow
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.io.File
+import javax.swing.JFileChooser
 
 class VideoRecorderWindowOperations(
     private val _mainWindow: VideoWindow,
@@ -53,14 +55,14 @@ class VideoRecorderWindowOperations(
         val newShot = Shot(
             Plane(plane.xMin, plane.xMax, plane.yMin, plane.yMax)
                 .apply {
-                    width = 100
-                    height = 100
+                    width = plane.width
+                    height = plane.height
                 }
         )
 
         VideoSettings.addShot(newShot)
         _shotsListWindow.apply {
-            updateThumbnails(_service.shotsList)
+            updateThumbnails(VideoSettings.getKeyShots())
             repaint()
             isVisible = true
         }
@@ -78,13 +80,24 @@ class VideoRecorderWindowOperations(
         val videoFramerate = _mainWindow.fpsSpinner.value as Int
         val videoDuration = _mainWindow.durationSpinner.value as Int
 
-        val dto = CreateVideoDTO(
+        val fileChooser = JFileChooser().apply { selectedFile = File("video.mp4") };
+
+        fileChooser.showSaveDialog(_mainWindow)
+
+        var filename = fileChooser.selectedFile.absolutePath;
+
+        if(!filename.contains(".mp4"))
+            filename = filename.plus(".mp4");
+
+
+        val createModel = CreateVideoModel(
             videoHeight,
             videoWidth,
             videoFramerate,
-            videoDuration
+            videoDuration,
+            filename
         )
 
-        _service.Execute(dto)
+        _service.execute(createModel)
     }
 }

@@ -1,7 +1,7 @@
 package ru.smak.video.ui.windows
 
 import ru.smak.graphics.Plane
-import ru.smak.video.VideoSettings
+import ru.smak.video.objects.VideoSettings
 import ru.smak.video.operations.VideoRecorderWindowOperations
 import ru.smak.video.services.VideoRecorderWindowService
 import java.awt.Dimension
