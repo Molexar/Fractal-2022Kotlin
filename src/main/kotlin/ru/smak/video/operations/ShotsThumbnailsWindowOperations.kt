@@ -1,6 +1,6 @@
 package ru.smak.video.operations
 
-import ru.smak.video.VideoSettings
+import ru.smak.video.objects.VideoSettings
 import ru.smak.video.ui.windows.ShotsListWindow
 import ru.smak.video.ui.windows.VideoWindow
 import java.awt.event.MouseAdapter

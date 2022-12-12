@@ -1,9 +1,9 @@
-package ru.smak.video.dto
+package ru.smak.video.models
 
 /*
-* DTO окна создания видео.
+* Модель окна создания видео.
 * */
-data class CreateVideoDTO
+data class CreateVideoModel
 (
     // Высота выходного видео в пикселях.
     val height: Int,
@@ -15,5 +15,8 @@ data class CreateVideoDTO
     val duration: Int,
 
     // Количество FPS.
-    val fps: Int
+    val fps: Int,
+
+    // Имя сохраняемого файла.
+    val filename: String
 )

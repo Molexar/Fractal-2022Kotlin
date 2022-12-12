@@ -1,16 +1,16 @@
-package ru.smak.video
+package ru.smak.video.objects
 
 import kotlinx.coroutines.DisposableHandle
+import ru.smak.video.entities.Shot
 
 // класс параметров для создания видео
 object VideoSettings : DisposableHandle {
 
     private val _shotsList = mutableListOf<Shot>(); // список ключевых снимков (добавляются при нажатии на Add Shot кнопку)
 
-    var fps = 25;
     var width = 800;
     var height = 600;
-    var duration = 5;
+
     fun getKeyShotsCount() = _shotsList.size;
     fun getKeyShots() = _shotsList.toMutableList();
 
@@ -20,12 +20,4 @@ object VideoSettings : DisposableHandle {
     override fun dispose() {
         _shotsList.clear();
     }
-
-    fun calculateAllShots(): List<Shot>
-    {
-        return _shotsList
-    }
-
-
-
 }
