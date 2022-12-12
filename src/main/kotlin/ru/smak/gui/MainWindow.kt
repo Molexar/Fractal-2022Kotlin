@@ -4,7 +4,7 @@ import ru.smak.graphics.*
 import ru.smak.math.Complex
 import ru.smak.math.Julia
 import ru.smak.math.Mandelbrot
-import ru.smak.video.windows.VideoWindow
+import ru.smak.video.ui.windows.VideoWindow
 import java.awt.Button
 import java.awt.Color
 import java.awt.Dimension

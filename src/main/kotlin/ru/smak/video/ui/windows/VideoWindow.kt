@@ -1,13 +1,10 @@
-package ru.smak.video.windows
+package ru.smak.video.ui.windows
 
 import ru.smak.graphics.Plane
-import ru.smak.video.Shot
-import ru.smak.video.VideoCreator
 import ru.smak.video.VideoSettings
+import ru.smak.video.operations.VideoRecorderWindowOperations
+import ru.smak.video.services.VideoRecorderWindowService
 import java.awt.Dimension
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
-import java.io.File
 import javax.swing.*
 
 
@@ -19,21 +16,21 @@ class VideoWindow(frame: JFrame) : JFrame() {
     var plane = Plane();
 
     private var _shotsListWindow = ShotsListWindow(this).apply { isVisible = false; };
-    private val _videoSettings = VideoSettings;
 
+    val shotsCountLabel = JLabel("Shots count: ${VideoSettings.getKeyShotsCount()}")
 
     // spinners
     private val _widthLabel = JLabel("Width");
-    private val _widthSpinner = JSpinner();
+    val widthSpinner = JSpinner();
 
     private val _heightLabel = JLabel("Height");
-    private val _heightSpinner = JSpinner();
+    val heightSpinner = JSpinner();
 
     private val _fpsLabel = JLabel("FPS");
-    private val _fpsSpinner = JSpinner();
+    val fpsSpinner = JSpinner();
 
     private val _durationLabel = JLabel("Duration");
-    private val _durationSpinner = JSpinner();
+    val durationSpinner = JSpinner();
 
     // buttons
     private val _addShotBtn = JButton("Add Shot").apply { setFocusPainted(false);setContentAreaFilled(false); };
@@ -45,19 +42,10 @@ class VideoWindow(frame: JFrame) : JFrame() {
     companion object {
         val SHRINK = GroupLayout.PREFERRED_SIZE
         val GROW = GroupLayout.DEFAULT_SIZE
-
-        val shotsCountLabel = JLabel("Shots count: ${VideoSettings.getKeyShotsCount()}")
-
-        fun refreshShotsCount(count: Int = -1) {
-
-            if (count != -1) shotsCountLabel.text = "Shots count: ${count}";
-            else shotsCountLabel.text = "Shots count: ${VideoSettings.getKeyShotsCount()}";
-        }
-
     }
 
     init {
-
+        configureNames();
         setupLayout();
         setupSpinners();
         setupEventListeners();
@@ -66,6 +54,13 @@ class VideoWindow(frame: JFrame) : JFrame() {
 
         size = _minSize;
         isVisible = true;
+    }
+
+    private fun configureNames() {
+        _addShotBtn.name = "AddShotButton";
+        _clearBtn.name = "ClearShotsButton";
+        _createBtn.name = "CreateVideoButton";
+        _showShotsBtn.name = "ShowShotsButton";
     }
 
 
@@ -105,11 +100,11 @@ class VideoWindow(frame: JFrame) : JFrame() {
                         .addGap(10)
                         .addComponent(_widthLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(_widthSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(widthSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
                         .addComponent(_heightLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(_heightSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(heightSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
                         .addComponent(_addShotBtn, 20, SHRINK, SHRINK)
                         .addGap(10)
@@ -126,11 +121,11 @@ class VideoWindow(frame: JFrame) : JFrame() {
                         .addGap(10)
                         .addComponent(_fpsLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(_fpsSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(fpsSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
                         .addComponent(_durationLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(_durationSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(durationSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
                         .addComponent(_clearBtn, 20, SHRINK, SHRINK)
                         .addGap(10)
@@ -150,11 +145,11 @@ class VideoWindow(frame: JFrame) : JFrame() {
                         .addComponent(shotsCountLabel, 20, SHRINK, SHRINK)
                         .addComponent(_widthLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(_widthSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(widthSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
                         .addComponent(_heightLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(_heightSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(heightSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
                         .addComponent(_addShotBtn, 20, SHRINK, SHRINK)
                         .addGap(10)
@@ -166,11 +161,11 @@ class VideoWindow(frame: JFrame) : JFrame() {
                         .addGap(10)
                         .addComponent(_fpsLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(_fpsSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(fpsSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
                         .addComponent(_durationLabel, 20, SHRINK, SHRINK)
                         .addGap(5)
-                        .addComponent(_durationSpinner, 20, SHRINK, SHRINK)
+                        .addComponent(durationSpinner, 20, SHRINK, SHRINK)
                         .addGap(10)
                         .addComponent(_clearBtn, 20, SHRINK, SHRINK)
                         .addGap(10)
@@ -188,103 +183,114 @@ class VideoWindow(frame: JFrame) : JFrame() {
         }
 
         val widthModel = SpinnerNumberModel(800, 100, 1920, 100);
-        _widthSpinner.model = widthModel;
-        removeSpinnerUpDownArrows(_widthSpinner);
+        widthSpinner.model = widthModel;
+        removeSpinnerUpDownArrows(widthSpinner);
 
         val heightModel = SpinnerNumberModel(600, 100, 1920, 100);
-        _heightSpinner.model = heightModel;
-        removeSpinnerUpDownArrows(_heightSpinner);
+        heightSpinner.model = heightModel;
+        removeSpinnerUpDownArrows(heightSpinner);
 
 
         val fpsModel = SpinnerNumberModel(30, 24, 120, 5);
-        _fpsSpinner.model = fpsModel;
-        removeSpinnerUpDownArrows(_fpsSpinner);
+        fpsSpinner.model = fpsModel;
+        removeSpinnerUpDownArrows(fpsSpinner);
 
 
         val durationModel = SpinnerNumberModel(5, 1, 60, 1);
-        _durationSpinner.model = durationModel;
-        removeSpinnerUpDownArrows(_durationSpinner);
+        durationSpinner.model = durationModel;
+        removeSpinnerUpDownArrows(durationSpinner);
 
 
     }
 
     private fun setupEventListeners() {
+        val videoRecorderWindowService = VideoRecorderWindowService()
+        val videoRecorderWindowOperations = VideoRecorderWindowOperations(
+            this,
+            _shotsListWindow,
+            videoRecorderWindowService
+        )
 
-        _addShotBtn.addMouseListener(object : MouseAdapter() {
-            override fun mouseClicked(e: MouseEvent?) {
-                e?.apply {
-                    if (button == 1) {
-                        VideoSettings.addShot(
-                            Shot(Plane(plane.xMin, plane.xMax, plane.yMin, plane.yMax)
-                                .apply {
-                                    width = 100;
-                                    height = 100;
-                                })
-                        );
-                        refreshShotsCount();
+        _addShotBtn.addMouseListener(videoRecorderWindowOperations)
+        _clearBtn.addMouseListener(videoRecorderWindowOperations)
+        _showShotsBtn.addMouseListener(videoRecorderWindowOperations)
+        _createBtn.addMouseListener(videoRecorderWindowOperations)
 
-                        _shotsListWindow.setThumbnails(_videoSettings.getKeyShots());
-                        _shotsListWindow.repaint();
-                        _shotsListWindow.isVisible = true;
-
-                        // todo: show dialog only if it's needed?
-
-                    }
-                }
-            }
-        });
-
-        _clearBtn.addMouseListener(object : MouseAdapter() {
-            override fun mouseClicked(e: MouseEvent?) {
-                e?.apply {
-                    if (button == 1) {
-                        VideoSettings.dispose();
-                        _shotsListWindow.dispose();
-                        _shotsListWindow.repaint();
-                        _shotsListWindow.isVisible = true;
-                        refreshShotsCount();
-                    }
-                }
-            }
-        })
-
-        _createBtn.addMouseListener(object : MouseAdapter() {
-            override fun mouseClicked(e: MouseEvent?) {
-                e?.apply {
-                    if (button == 1) {
-                        VideoSettings.width = _widthSpinner.value as Int;
-                        VideoSettings.height = _heightSpinner.value as Int;
-                        VideoSettings.fps = _fpsSpinner.value as Int;
-                        VideoSettings.duration = _durationSpinner.value as Int;
-
-                        //val filter: FileFilter = FileFilter {  }("MP3 File", "mp3") // TODO:
-
-
-                        val fileChooser = JFileChooser().apply { selectedFile = File("video.mp4") };
-
-                        fileChooser.showSaveDialog(_mainPanel);
-
-                        var filename = fileChooser.selectedFile.absolutePath;
-
-                        if(!filename.contains(".mp4"))
-                            filename = filename.plus(".mp4");
-
-                        VideoCreator.createVideo(filename, VideoSettings.calculateAllShots())
-                    }
-                }
-            }
-        });
-
-        _showShotsBtn.addMouseListener(object : MouseAdapter() {
-            override fun mouseClicked(e: MouseEvent?) {
-                e?.apply {
-                    if (button == 1) {
-                        _shotsListWindow.isVisible = true;
-                    };
-                }
-            }
-
-        });
+//        _addShotBtn.addMouseListener(object : MouseAdapter() {
+//            override fun mouseClicked(e: MouseEvent?) {
+//                e?.apply {
+//                    if (button == 1) {
+//                        VideoSettings.addShot(
+//                            Shot(Plane(plane.xMin, plane.xMax, plane.yMin, plane.yMax)
+//                                .apply {
+//                                    width = 100;
+//                                    height = 100;
+//                                })
+//                        );
+//                        refreshShotsCount();
+//
+//                        _shotsListWindow.setThumbnails(_videoSettings.getKeyShots());
+//                        _shotsListWindow.repaint();
+//                        _shotsListWindow.isVisible = true;
+//
+//                        // todo: show dialog only if it's needed?
+//
+//                    }
+//                }
+//            }
+//        });
+//
+//        _clearBtn.addMouseListener(object : MouseAdapter() {
+//            override fun mouseClicked(e: MouseEvent?) {
+//                e?.apply {
+//                    if (button == 1) {
+//                        VideoSettings.dispose();
+//                        _shotsListWindow.dispose();
+//                        _shotsListWindow.repaint();
+//                        _shotsListWindow.isVisible = true;
+//                        refreshShotsCount();
+//                    }
+//                }
+//            }
+//        })
+//
+//        _createBtn.addMouseListener(object : MouseAdapter() {
+//            override fun mouseClicked(e: MouseEvent?) {
+//                e?.apply {
+//                    if (button == 1) {
+//                        VideoSettings.width = _widthSpinner.value as Int;
+//                        VideoSettings.height = _heightSpinner.value as Int;
+//                        VideoSettings.fps = _fpsSpinner.value as Int;
+//                        VideoSettings.duration = _durationSpinner.value as Int;
+//
+//                        //val filter: FileFilter = FileFilter {  }("MP3 File", "mp3") // TODO:
+//
+//
+//                        val fileChooser = JFileChooser().apply { selectedFile = File("video.mp4") };
+//
+//                        fileChooser.showSaveDialog(_mainPanel);
+//
+//                        var filename = fileChooser.selectedFile.absolutePath;
+//
+//                        if(!filename.contains(".mp4"))
+//                            filename = filename.plus(".mp4");
+//
+//                        VideoCreator.createVideo(filename, VideoSettings.calculateAllShots())
+//                    }
+//                }
+//            }
+//        });
+//
+//        _showShotsBtn.addMouseListener(object : MouseAdapter() {
+//            override fun mouseClicked(e: MouseEvent?) {
+//                e?.apply {
+//                    if (button == 1) {
+//                        _shotsListWindow.isVisible = true;
+//                    };
+//                }
+//            }
+//
+//        });
 
     }
 

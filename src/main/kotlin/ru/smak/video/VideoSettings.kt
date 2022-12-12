@@ -23,7 +23,7 @@ object VideoSettings : DisposableHandle {
 
     fun calculateAllShots(): List<Shot>
     {
-        TODO("Сане; создать список всех кадров, для создания видео по ним")
+        return _shotsList
     }
 
 

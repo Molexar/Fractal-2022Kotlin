@@ -10,26 +10,26 @@ import javax.swing.JPanel
 
 class ShotThumbnail(val shot: Shot) : JPanel() {
 
-    var isSelected = false;
+    var isSelected = false
 
     init {
         size = Dimension(shot.image.width,shot.image.height)
         minimumSize = Dimension(shot.image.width,shot.image.height)
         preferredSize = Dimension(shot.image.width,shot.image.height)
-        background = Color.RED;
-        setupEventListeners();
+        background = Color.RED
+        setupEventListeners()
     }
 
     fun select()
     {
-        isSelected = true;
-        border = BorderFactory.createLineBorder(Color.RED,2);
+        isSelected = true
+        border = BorderFactory.createLineBorder(Color.RED,2)
     }
 
     fun unselect()
     {
-        isSelected = false;
-        border = null;
+        isSelected = false
+        border = null
     }
 
     private fun setupEventListeners() {
@@ -37,17 +37,17 @@ class ShotThumbnail(val shot: Shot) : JPanel() {
             override fun mouseClicked(e: MouseEvent?) {
                 e?.apply {
                     if (button == 1) {
-                        if(!isSelected) select();
-                        else unselect();
-                        repaint();
+                        if(!isSelected) select()
+                        else unselect()
+                        repaint()
                     }
                 }
 
             }
-        });
+        })
     }
 
     override fun paintComponent(g: Graphics?) {
-        g?.drawImage(shot.image, 0, 0, this);
+        g?.drawImage(shot.image, 0, 0, this)
     }
 }
