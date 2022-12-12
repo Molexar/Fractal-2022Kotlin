@@ -12,18 +12,16 @@ import javax.swing.JScrollPane
 
 fun main(args: Array<String>) {
     val w = MainWindow().apply { isVisible = true };
-    //MainWindow().isVisible = true
 
-
-    //val screen = w.getScreenShot(800,600);
-
+//    val screen = w.getScreenShot(800,600);
+//
 //    VideoCreator.createVideo(
 //        "video.mp4",
 //        listOf(
 //            screen,
 //        )
 //    );
-
+//
 //    val frame = JFrame("panel demo")
 //    frame.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
 //
