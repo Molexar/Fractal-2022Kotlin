@@ -7,6 +7,7 @@ import org.jcodec.scale.AWTUtil
 import ru.smak.graphics.Converter
 import ru.smak.graphics.Plane
 import ru.smak.graphics.yellowScheme
+import ru.smak.gui.MainWindow
 import ru.smak.math.Complex
 import ru.smak.math.Mandelbrot
 import ru.smak.math.video.catmullRom
@@ -38,7 +39,7 @@ class VideoRecorderWindowService {
     private val _taskCount = _threadCount * 4
     private val _threadPool = Executors.newFixedThreadPool(_threadCount)
     private val _fractal = Mandelbrot()
-    private val _colorizer = ::yellowScheme
+    private val _colorizer = MainWindow.colorScheme;
 
     val aspectRatio
         get() = _frameWidth.toDouble() / _frameHeight

@@ -2,7 +2,7 @@ package ru.smak.math
 
 open class Mandelbrot {
     var r: Double = 2.0
-    var maxIterations: Int = 500
+    var maxIterations: Int = 200
 
     open fun isInSet(c: Complex): Float{
         var cnt = 0

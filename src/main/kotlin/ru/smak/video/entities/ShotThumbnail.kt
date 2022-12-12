@@ -13,9 +13,9 @@ class ShotThumbnail(val shot: Shot) : JPanel() {
     var isSelected = false
 
     init {
-        size = Dimension(shot.image.width,shot.image.height)
-        minimumSize = Dimension(shot.image.width,shot.image.height)
-        preferredSize = Dimension(shot.image.width,shot.image.height)
+        size = Dimension(shot.thumbnailImage.width,shot.thumbnailImage.height)
+        minimumSize = Dimension(shot.thumbnailImage.width,shot.thumbnailImage.height)
+        preferredSize = Dimension(shot.thumbnailImage.width,shot.thumbnailImage.height)
         background = Color.RED
         setupEventListeners()
     }
@@ -48,6 +48,6 @@ class ShotThumbnail(val shot: Shot) : JPanel() {
     }
 
     override fun paintComponent(g: Graphics?) {
-        g?.drawImage(shot.image, 0, 0, this)
+        g?.drawImage(shot.thumbnailImage, 0, 0, this)
     }
 }
