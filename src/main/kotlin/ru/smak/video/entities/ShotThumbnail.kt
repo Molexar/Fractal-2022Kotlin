@@ -1,4 +1,4 @@
-package ru.smak.video
+package ru.smak.video.entities
 
 import java.awt.Color
 import java.awt.Dimension
