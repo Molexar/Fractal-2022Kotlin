@@ -4,8 +4,8 @@ import ru.smak.graphics.*
 import ru.smak.math.Complex
 import ru.smak.math.Julia
 import ru.smak.math.Mandelbrot
+import ru.smak.video.windows.VideoWindow
 import java.awt.Button
-import ru.smak.video.VideoWindow
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Point
@@ -13,6 +13,7 @@ import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.awt.image.BufferedImage
 import javax.swing.*
 import kotlin.random.Random
 
@@ -53,33 +54,33 @@ open class MainWindow : JFrame() {
         mainPanel.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
                 super.componentResized(e)
-                plane.width=width
-                plane.height=height
-                makeOneToOne(plane,trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
+                plane.width=mainPanel.width
+                plane.height=mainPanel.height
+                makeOneToOne(plane, trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
             }
         })
 
 
-    menuBar.add(createRecordBtn(plane)); // создаем окошко для создания видео
+        menuBar.add(createRecordBtn(plane)); // создаем окошко для создания видео
 
 
-    mainPanel.addMouseListener(
-    object : MouseAdapter() {
-            override fun mouseClicked(e: MouseEvent?) {
-                super.mouseClicked(e)
-                e?.let {
-                    if (e.button == MouseEvent.BUTTON1) {
-                        SecondWindow(colorScheme).apply {
-                            Julia.selectedPoint =
-                                Complex(Converter.xScrToCrt(e.x, plane), Converter.yScrToCrt(e.y, plane))
-                            isVisible = true
+        mainPanel.addMouseListener(
+            object : MouseAdapter() {
+                override fun mouseClicked(e: MouseEvent?) {
+                    super.mouseClicked(e)
+                    e?.let {
+                        if (e.button == MouseEvent.BUTTON1) {
+                            SecondWindow(colorScheme).apply {
+                                Julia.selectedPoint =
+                                    Complex(Converter.xScrToCrt(e.x, plane), Converter.yScrToCrt(e.y, plane))
+                                isVisible = true
+                            }
                         }
                     }
                 }
-            }
-        })
+            })
 
-        mainPanel.addMouseListener(object : MouseAdapter(){
+        mainPanel.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
                 super.mousePressed(e)
                 e?.let {
@@ -89,18 +90,26 @@ open class MainWindow : JFrame() {
 
             override fun mouseReleased(e: MouseEvent?) {
                 super.mouseReleased(e)
-                rect.leftTop?.let {first->
+                rect.leftTop?.let { first ->
                     val g = mainPanel.graphics
                     g.color = Color.BLACK
                     g.setXORMode(Color.WHITE)
                     g.drawRect(first.x, first.y, rect.width, rect.height)
                     g.setPaintMode()
-                    if (rect.isExistst){
-                        val x1 = rect.x1?.let{Converter.xScrToCrt(it, plane)} ?: return@let
-                        val x2 = rect.x2?.let{Converter.xScrToCrt(it, plane)} ?: return@let
-                        val y1 = rect.y1?.let{Converter.yScrToCrt(it, plane)} ?: return@let
-                        val y2 = rect.y2?.let{Converter.yScrToCrt(it, plane)} ?: return@let
-                        makeOneToOne(plane,x1,x2,y1,y2,mainPanel.size,trgsz)//Делает панель мастштабом 1 к 1 и меняет trgsz
+                    if (rect.isExistst) {
+                        val x1 = rect.x1?.let { Converter.xScrToCrt(it, plane) } ?: return@let
+                        val x2 = rect.x2?.let { Converter.xScrToCrt(it, plane) } ?: return@let
+                        val y1 = rect.y1?.let { Converter.yScrToCrt(it, plane) } ?: return@let
+                        val y2 = rect.y2?.let { Converter.yScrToCrt(it, plane) } ?: return@let
+                        makeOneToOne(
+                            plane,
+                            x1,
+                            x2,
+                            y1,
+                            y2,
+                            mainPanel.size,
+                            trgsz
+                        )//Делает панель мастштабом 1 к 1 и меняет trgsz
                         mainPanel.repaint()
                     }
                 }
@@ -108,11 +117,11 @@ open class MainWindow : JFrame() {
             }
         })
 
-        mainPanel.addMouseMotionListener(object : MouseAdapter(){
+        mainPanel.addMouseMotionListener(object : MouseAdapter() {
             override fun mouseDragged(e: MouseEvent?) {
                 super.mouseDragged(e)
 
-                e?.let{ curr->
+                e?.let { curr ->
                     rect.leftTop?.let { first ->
                         val g = mainPanel.graphics
                         g.color = Color.BLACK
@@ -249,22 +258,22 @@ open class MainWindow : JFrame() {
 
     }
 
-private fun createRecordBtn(plane: Plane): JButton {
-    val btn = JButton("Record");
+    private fun createRecordBtn(plane: Plane): JButton {
+        val btn = JButton("Record");
 
-    btn.addMouseListener(object : MouseAdapter() {
-        override fun mousePressed(e: MouseEvent?) {
-            super.mousePressed(e)
-            e?.let {
-                _videoWindow.apply {
-                    this.plane = plane;
-                    isVisible = true
+        btn.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent?) {
+                super.mousePressed(e)
+                e?.let {
+                    _videoWindow.apply {
+                        this.plane = plane;
+                        isVisible = true
+                    }
                 }
             }
-        }
-    })
-    return btn;
-}
+        })
+        return btn;
+    }
 
     override fun setVisible(b: Boolean) {
         super.setVisible(b)
@@ -280,17 +289,16 @@ private fun createRecordBtn(plane: Plane): JButton {
         const val SHRINK = GroupLayout.PREFERRED_SIZE
     }
 
-// TODO: for testing video creation
-fun getScreenShot(width: Int, height: Int): BufferedImage {
+    // TODO: for testing video creation
+    fun getScreenShot(width: Int, height: Int): BufferedImage {
 
-    val image = BufferedImage(
-        width,
-        height,
-        BufferedImage.TYPE_INT_RGB
-    )
-    mainPanel.paint(image.graphics)
-    return image
-}
-
+        val image = BufferedImage(
+            width,
+            height,
+            BufferedImage.TYPE_INT_RGB
+        )
+        mainPanel.paint(image.graphics)
+        return image
+    }
 
 }
