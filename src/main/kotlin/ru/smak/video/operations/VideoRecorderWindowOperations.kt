@@ -93,8 +93,8 @@ class VideoRecorderWindowOperations(
         val createModel = CreateVideoModel(
             videoHeight,
             videoWidth,
-            videoFramerate,
-            videoDuration,
+            15,
+            25,
             filename
         )
 
