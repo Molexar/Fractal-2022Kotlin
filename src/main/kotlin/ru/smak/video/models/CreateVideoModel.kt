@@ -15,7 +15,7 @@ data class CreateVideoModel
     val duration: Int,
 
     // Количество FPS.
-    val fps: Int,
+    val fps: Int = 24,
 
     // Имя сохраняемого файла.
     val filename: String
