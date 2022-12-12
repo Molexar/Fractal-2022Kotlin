@@ -1,8 +1,8 @@
 package ru.smak.video.ui.windows
 
 import kotlinx.coroutines.DisposableHandle
-import ru.smak.video.Shot
-import ru.smak.video.ShotThumbnail
+import ru.smak.video.entities.Shot
+import ru.smak.video.entities.ShotThumbnail
 import ru.smak.video.operations.ShotsThumbnailsWindowOperations
 import java.awt.Dimension
 import java.awt.FlowLayout
@@ -19,8 +19,8 @@ class ShotsListWindow(val mainComponent: VideoWindow) : JFrame(), DisposableHand
     val controlPanel = JPanel();
 
     private val _deleteBtn = JButton("Delete").apply {
-        setFocusPainted(false);
-        setContentAreaFilled(false);
+        isFocusPainted = false;
+        isContentAreaFilled = false;
     };
 
     companion object {

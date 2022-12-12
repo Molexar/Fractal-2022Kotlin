@@ -1,13 +1,6 @@
 package ru.smak
 
 import ru.smak.gui.MainWindow
-import ru.smak.video.VideoCreator
-import java.awt.GridLayout
-import javax.swing.GroupLayout
-import javax.swing.JFrame
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JScrollPane
 
 
 fun main(args: Array<String>) {
