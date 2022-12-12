@@ -25,6 +25,8 @@ import java.util.stream.Collectors
 import kotlin.math.exp
 import kotlin.math.ln
 import kotlin.math.max
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 class VideoRecorderWindowService {
 
@@ -41,18 +43,21 @@ class VideoRecorderWindowService {
     val aspectRatio
         get() = _frameWidth.toDouble() / _frameHeight
 
+    @OptIn(ExperimentalTime::class)
     fun execute(model: CreateVideoModel)
     {
         _frameWidth = model.width
         _frameHeight = model.height
 
         println("Video create started")
+        val executedTime = measureTime {
+            val bufferedImages = getData(model)
 
-        val bufferedImages = getData(model)
-
-        create(bufferedImages, model)
+            create(bufferedImages, model)
+        }
 
         println("Video created!")
+        println("Time: ${executedTime.inWholeMilliseconds}")
     }
 
     @Suppress("Since15")
