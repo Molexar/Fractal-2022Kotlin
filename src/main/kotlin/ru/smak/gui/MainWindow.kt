@@ -25,6 +25,8 @@ open class MainWindow : JFrame() {
 
     private val _videoWindow = VideoWindow(this).apply { isVisible = false; };
 
+
+
     val trgsz = TargetSz()
     private var startPoint: Point? = null
     private var numButtonPressed: Int = 0
@@ -47,7 +49,8 @@ open class MainWindow : JFrame() {
         defaultCloseOperation = EXIT_ON_CLOSE
         minimumSize = minSz
 
-        val colorScheme = ColorFuncs[Random.nextInt(ColorFuncs.size)]
+        colorScheme = ColorFuncs[Random.nextInt(ColorFuncs.size)]
+
         val plane = Plane(-2.0, 1.0, -1.0, 1.0)
         trgsz.getTargetFromPlane(plane)
         val fp = FractalPainter(Mandelbrot()::isInSet, colorScheme, plane)
@@ -373,6 +376,8 @@ private fun createRecordBtn(plane: Plane): JButton {
     companion object {
         const val GROW = GroupLayout.DEFAULT_SIZE
         const val SHRINK = GroupLayout.PREFERRED_SIZE
+
+        var colorScheme: (Float) -> Color = ::testFunc;
     }
 
 // TODO: for testing video creation
@@ -386,6 +391,7 @@ fun getScreenShot(width: Int, height: Int): BufferedImage {
     mainPanel.paint(image.graphics)
     return image
 }
+
 
 
 }
