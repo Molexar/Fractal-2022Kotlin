@@ -65,7 +65,7 @@ open class MainWindow : JFrame() {
                 super.componentResized(e)
                 plane.width=mainPanel.width
                 plane.height=mainPanel.height
-                makeOneToOne(plane,trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
+                makeOneToOne(plane, trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
             }
         })
 
@@ -86,8 +86,7 @@ open class MainWindow : JFrame() {
                         }
                     }
                 }
-            }
-        })
+            })
 
         mainPanel.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
@@ -242,7 +241,6 @@ open class MainWindow : JFrame() {
                     "Королева Ульяна \n" +
                     "Цымбал Данила"
 
-
             minimumSize = minSz
 
             layout = GroupLayout(contentPane).apply {
@@ -268,6 +266,10 @@ open class MainWindow : JFrame() {
                             createParallelGroup()
                                 .addComponent(commonLabel, SHRINK, SHRINK, SHRINK)
                                 .addComponent(pplLabel, SHRINK, SHRINK, SHRINK)
+                        )
+                        .addGroup(
+                            createParallelGroup()
+                                .addComponent(pplLabel3, SHRINK, SHRINK, SHRINK)
                         )
                         .addGap(8)
                 )
