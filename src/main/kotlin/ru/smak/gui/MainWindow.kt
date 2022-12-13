@@ -21,14 +21,16 @@ open class MainWindow : JFrame() {
     val minSz = Dimension(1000, 600)
     val mainPanel: GraphicsPanel
 
-
-
     private val _videoWindow = VideoWindow(this).apply { isVisible = false; };
 
+
+
+
+
+
+    val trgsz = TargetSz()
     private var startPoint: Point? = null
     private var numButtonPressed: Int = 0
-    val trgsz = TargetSz()
-
 
     var firstColor: Color = Color.BLACK
     var secondColor: Color = Color.WHITE
@@ -66,7 +68,7 @@ open class MainWindow : JFrame() {
                 super.componentResized(e)
                 plane.width=mainPanel.width
                 plane.height=mainPanel.height
-                makeOneToOne(plane, trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
+                makeOneToOne(plane,trgsz, mainPanel.size)//Делает панель мастштабом 1 к 1
             }
         })
 
@@ -87,7 +89,8 @@ open class MainWindow : JFrame() {
                         }
                     }
                 }
-            })
+            }
+        })
 
         mainPanel.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
@@ -242,6 +245,7 @@ open class MainWindow : JFrame() {
                     "Королева Ульяна \n" +
                     "Цымбал Данила"
 
+
             minimumSize = minSz
 
             layout = GroupLayout(contentPane).apply {
@@ -267,10 +271,6 @@ open class MainWindow : JFrame() {
                             createParallelGroup()
                                 .addComponent(commonLabel, SHRINK, SHRINK, SHRINK)
                                 .addComponent(pplLabel, SHRINK, SHRINK, SHRINK)
-                        )
-                        .addGroup(
-                            createParallelGroup()
-                                .addComponent(pplLabel3, SHRINK, SHRINK, SHRINK)
                         )
                         .addGap(8)
                 )
