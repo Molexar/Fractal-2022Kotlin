@@ -21,9 +21,9 @@ open class MainWindow : JFrame() {
     val minSz = Dimension(1000, 600)
     val mainPanel: GraphicsPanel
 
+
+
     private val _videoWindow = VideoWindow(this).apply { isVisible = false; };
-
-
 
     val trgsz = TargetSz()
     private var startPoint: Point? = null
