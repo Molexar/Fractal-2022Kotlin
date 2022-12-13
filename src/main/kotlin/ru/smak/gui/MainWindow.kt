@@ -4,15 +4,13 @@ import ru.smak.graphics.*
 import ru.smak.math.Complex
 import ru.smak.math.Julia
 import ru.smak.math.Mandelbrot
-import java.awt.Button
 import ru.smak.video.ui.windows.VideoWindow
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.Point
+import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.awt.image.BufferedImage
 import java.io.File
 import javax.swing.*
 import kotlin.random.Random

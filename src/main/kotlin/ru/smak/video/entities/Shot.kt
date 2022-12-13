@@ -41,7 +41,6 @@ class Shot(plane: Plane) {
         }
     }
 
-
     private fun getImageFromPlaneAsync(scope: CoroutineScope, width: Int, height: Int) = scope.async {
         return@async getImageFromPlane(plane, width, height);
     }
