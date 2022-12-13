@@ -17,6 +17,18 @@ import kotlin.random.Random
 
 
 open class MainWindow : JFrame() {
+    private class Rollback(private val plane: Plane,
+                           private val targetSz: TargetSz,
+                           private val dimension: Dimension) {
+        private val xMin = targetSz.targetXMin
+        private val xMax = targetSz.targetXMax
+        private val yMin = targetSz.targetYMin
+        private val yMax = targetSz.targetYMax
+        fun rollback() {
+            makeOneToOne(plane, xMin, xMax, yMin, yMax, dimension, targetSz)
+        }
+    }
+    private val operations = mutableListOf<Rollback>()
     private var rect: Rectangle = Rectangle()
     val minSz = Dimension(1000, 600)
     val mainPanel: GraphicsPanel
@@ -98,8 +110,10 @@ open class MainWindow : JFrame() {
                 e?.let {
                     if (it.button == MouseEvent.BUTTON1)
                         rect.addPoint(it.point)
-                    else if (it.button == MouseEvent.BUTTON3)
+                    else if (it.button == MouseEvent.BUTTON3) {
                         startPoint = it.point
+                    }
+                    operations.add(Rollback(plane, trgsz, mainPanel.size))
                     numButtonPressed = it.button
                 }
             }
@@ -126,7 +140,7 @@ open class MainWindow : JFrame() {
                                 y2,
                                 mainPanel.size,
                                 trgsz
-                            )//Делает панель мастштабом 1 к 1 и меняет trgsz
+                            )//Делает панель мастштабом 1 к 1 и меняет trgs
                             mainPanel.repaint()
                         }
                     }
@@ -345,6 +359,18 @@ open class MainWindow : JFrame() {
 
     private fun createCtrlZButton(): JButton {
         val ctrlzButton = JButton("Отменить предыдущее действие")
+        ctrlzButton.addMouseListener(
+            object : MouseAdapter(){
+                override fun mouseClicked(e: MouseEvent?) {
+                    super.mouseClicked(e)
+                    if (operations.size > 0) {
+                        operations.last().rollback()
+                        operations.removeAt(operations.lastIndex)
+                        mainPanel.repaint()
+                    }
+                }
+            }
+        )
 
         return ctrlzButton
 
