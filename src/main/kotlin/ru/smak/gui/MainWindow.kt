@@ -25,9 +25,10 @@ open class MainWindow : JFrame() {
 
 
 
-    val trgsz = TargetSz()
     private var startPoint: Point? = null
     private var numButtonPressed: Int = 0
+    val trgsz = TargetSz()
+
 
     var firstColor: Color = Color.BLACK
     var secondColor: Color = Color.WHITE
