@@ -18,7 +18,7 @@ import kotlin.random.Random
 
 open class MainWindow : JFrame() {
     private var rect: Rectangle = Rectangle()
-    val minSz = Dimension(800, 600)
+    val minSz = Dimension(1000, 600)
     val mainPanel: GraphicsPanel
 
     private val _videoWindow = VideoWindow(this).apply { isVisible = false; };
@@ -200,7 +200,9 @@ open class MainWindow : JFrame() {
 
             val pplArray = listOf<String>(
                 "Потасьев Никита", "Щербанев Дмитрий",
-                "Балакин Александр", "Иванов Владислав", "Хусаинов Данил", "Даянов Рамиль", "Королева Ульяна"
+                "Балакин Александр", "Иванов Владислав",
+                "Хусаинов Данил", "Даянов Рамиль", "Королева Ульяна",
+                "Цымбал Данила"
             )
 
             pplArray.forEachIndexed { i, s -> g2d.drawString(s, k + i * 20, l + i * 30) }
