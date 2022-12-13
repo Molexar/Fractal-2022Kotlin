@@ -15,7 +15,8 @@ class VideoWindow(frame: JFrame) : JFrame() {
 
     var plane = Plane();
 
-    private var _shotsListWindow = ShotsListWindow(this).apply { isVisible = false; };
+    private val _shotsListWindow = ShotsListWindow(this).apply { isVisible = false; };
+    private val _progressWindow = ProgressWindow(this).apply { isVisible = false; };
 
     val shotsCountLabel = JLabel("Shots count: ${VideoSettings.getKeyShotsCount()}")
 
@@ -208,6 +209,7 @@ class VideoWindow(frame: JFrame) : JFrame() {
         val videoRecorderWindowOperations = VideoRecorderWindowOperations(
             this,
             _shotsListWindow,
+            _progressWindow,
             videoRecorderWindowService
         )
 
