@@ -10,6 +10,7 @@ object VideoSettings : DisposableHandle {
 
     var width = 800;
     var height = 600;
+    var requiredShotsCount = 0;
 
     fun getKeyShotsCount() = _shotsList.size;
     fun getKeyShots() = _shotsList.toMutableList();
