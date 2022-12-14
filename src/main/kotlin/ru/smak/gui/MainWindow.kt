@@ -4,6 +4,9 @@ import ru.smak.graphics.*
 import ru.smak.math.Complex
 import ru.smak.math.Julia
 import ru.smak.math.Mandelbrot
+import ru.smak.tools.FractalData
+import ru.smak.tools.FractalDataFileLoader
+import ru.smak.tools.FractalDataFileSaver
 import ru.smak.video.ui.windows.VideoWindow
 import java.awt.*
 import java.awt.event.ComponentAdapter
@@ -13,13 +16,21 @@ import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.swing.*
+import javax.swing.filechooser.FileNameExtensionFilter
+import kotlin.math.abs
 import kotlin.random.Random
 
 
 open class MainWindow : JFrame() {
-    private class Rollback(private val plane: Plane,
-                           private val targetSz: TargetSz,
-                           private val dimension: Dimension) {
+    private var colorFuncIndex: Int
+    private var plane: Plane
+    private val fp: FractalPainter
+
+    private class Rollback(
+        private val plane: Plane,
+        private val targetSz: TargetSz,
+        private val dimension: Dimension
+    ) {
         private val xMin = targetSz.targetXMin
         private val xMax = targetSz.targetXMax
         private val yMin = targetSz.targetYMin
@@ -28,31 +39,25 @@ open class MainWindow : JFrame() {
             makeOneToOne(plane, xMin, xMax, yMin, yMax, dimension, targetSz)
         }
     }
+
     private val operations = mutableListOf<Rollback>()
     private var rect: Rectangle = Rectangle()
     val minSz = Dimension(1000, 600)
     val mainPanel: GraphicsPanel
 
-    private val _videoWindow = VideoWindow(this).apply { isVisible = false; };
-
-
-
-
+    private val _videoWindow = VideoWindow(this).apply { isVisible = false; }
 
 
     val trgsz = TargetSz()
     private var startPoint: Point? = null
     private var numButtonPressed: Int = 0
-
-    var firstColor: Color = Color.BLACK
-    var secondColor: Color = Color.WHITE
+    var checkbox= createDynamicalItsButton()
 
     init {
         val menuBar = JMenuBar().apply {
-            add(createOpenButton())
-            add(createSaveButton())
+            add(createFileMenu())
             add(createColorMenu())
-            add(createDynamicalItsButton())
+            add(checkbox)
             add(createCtrlZButton())
             add(createAboutButton())
         }
@@ -62,11 +67,12 @@ open class MainWindow : JFrame() {
         defaultCloseOperation = EXIT_ON_CLOSE
         minimumSize = minSz
 
-        colorScheme = ColorFuncs[Random.nextInt(ColorFuncs.size)]
+        colorFuncIndex = Random.nextInt(ColorFuncs.size)
+        val colorScheme = ColorFuncs[colorFuncIndex]
+        plane = Plane(-2.0, 1.0, -1.0, 1.0)
 
-        val plane = Plane(-2.0, 1.0, -1.0, 1.0)
         trgsz.getTargetFromPlane(plane)
-        val fp = FractalPainter(Mandelbrot()::isInSet, colorScheme, plane)
+        fp = FractalPainter(Mandelbrot()::isInSet, colorScheme, plane)
         //val fpj = FractalPainter(Julia()::isInSet, ::testFunc, plane)
         mainPanel = GraphicsPanel().apply {
             background = Color.WHITE
@@ -84,25 +90,24 @@ open class MainWindow : JFrame() {
             }
         })
 
+        menuBar.add(createRecordBtn(plane)) // создаем окошко для создания видео
 
-    menuBar.add(createRecordBtn(plane)); // создаем окошко для создания видео
 
-
-    mainPanel.addMouseListener(
-    object : MouseAdapter() {
-            override fun mouseClicked(e: MouseEvent?) {
-                super.mouseClicked(e)
-                e?.let {
-                    if (it.button == MouseEvent.BUTTON1) {
-                        SecondWindow(colorScheme).apply {
-                            Julia.selectedPoint =
-                                Complex(Converter.xScrToCrt(it.x, plane), Converter.yScrToCrt(it.y, plane))
-                            isVisible = true
+        mainPanel.addMouseListener(
+            object : MouseAdapter() {
+                override fun mouseClicked(e: MouseEvent?) {
+                    super.mouseClicked(e)
+                    e?.let {
+                        if (it.button == MouseEvent.BUTTON1) {
+                            SecondWindow(colorScheme).apply {
+                                Julia.selectedPoint =
+                                    Complex(Converter.xScrToCrt(it.x, plane), Converter.yScrToCrt(it.y, plane))
+                                isVisible = true
+                            }
                         }
                     }
                 }
-            }
-        })
+            })
 
         mainPanel.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
@@ -132,6 +137,12 @@ open class MainWindow : JFrame() {
                             val x2 = rect.x2?.let { Converter.xScrToCrt(it, plane) } ?: return@let
                             val y1 = rect.y1?.let { Converter.yScrToCrt(it, plane) } ?: return@let
                             val y2 = rect.y2?.let { Converter.yScrToCrt(it, plane) } ?: return@let
+                            if (checkbox.isSelected){
+                            val sq: Int = plane.height * plane.width
+                            val new_sq = abs(x2-x1) * abs(y2-y1)
+                            var d: Int = 100
+                            if(sq/new_sq<100) d = (sq/new_sq).toInt()
+                            Mandelbrot.maxIterations += d}
                             makeOneToOne(
                                 plane,
                                 x1,
@@ -201,8 +212,8 @@ open class MainWindow : JFrame() {
         }
     }
 
-    class Text_Animation : JPanel() {
-        var k = 0
+    class AboutPanel : JPanel() {
+        private var k = 0
         var l = 100
 
         override fun paint(gp: Graphics) {
@@ -219,7 +230,8 @@ open class MainWindow : JFrame() {
                 "Потасьев Никита", "Щербанев Дмитрий",
                 "Балакин Александр", "Иванов Владислав",
                 "Хусаинов Данил", "Даянов Рамиль", "Королева Ульяна",
-                "Цымбал Данила"
+                "Цымбал Данила", "Нигматов Аяз", "Домашев Данил",
+                "Шилин Юрий Эдуардович"
             )
 
             pplArray.forEachIndexed { i, s -> g2d.drawString(s, k + i * 20, l + i * 30) }
@@ -239,57 +251,53 @@ open class MainWindow : JFrame() {
         }
     }
 
-    class AboutWindow : JFrame() {
-        val minSz = Dimension(400, 450)
-
-        val commonLabel: JLabel
-        var pplLabel = JTextArea()
-
-
-        init {
-            commonLabel = JLabel()
-            commonLabel.text = "Над проектом работали : "
-            pplLabel.isEnabled = false
-            pplLabel.text = "Потасьев Никита \n" +
-                    "Щербанев Дмитрий \n" +
-                    "Балакин Александр \n" +
-                    "Иванов Владислав \n" +
-                    "Хусаинов Данил \n" +
-                    "Даянов Рамиль \n" +
-                    "Королева Ульяна \n" +
-                    "Цымбал Данила"
-
-
-            minimumSize = minSz
-
-            layout = GroupLayout(contentPane).apply {
-                setHorizontalGroup(
-                    createSequentialGroup()
-                        .addGap(8)
-                        .addGroup(
-                            createParallelGroup()
-                                .addComponent(commonLabel, SHRINK, SHRINK, SHRINK)
-                        )
-                        .addGap(16)
-                        .addGroup(
-                            createParallelGroup()
-                                .addComponent(pplLabel, SHRINK, SHRINK, SHRINK)
-                        )
-                        .addGap(8)
-                )
-
-                setVerticalGroup(
-                    createSequentialGroup()
-                        .addGap(8)
-                        .addGroup(
-                            createParallelGroup()
-                                .addComponent(commonLabel, SHRINK, SHRINK, SHRINK)
-                                .addComponent(pplLabel, SHRINK, SHRINK, SHRINK)
-                        )
-                        .addGap(8)
-                )
+    private fun createFileMenu(): JMenu {
+        val openItem = JMenuItem("Открыть")
+        openItem.addActionListener {
+            val fractalData = FractalDataFileLoader.loadData()
+            if (fractalData != null) {
+                plane.xEdges = Pair(fractalData.xMin, fractalData.xMax)
+                plane.yEdges = Pair(fractalData.yMin, fractalData.yMax)
+                fp.plane.xEdges = Pair(fractalData.xMin, fractalData.xMax)
+                fp.plane.yEdges = Pair(fractalData.yMin, fractalData.yMax)
+                fp.colorFunc = ColorFuncs[fractalData.colorFuncIndex]
+                colorScheme = ColorFuncs[fractalData.colorFuncIndex]
+                this.repaint()
             }
         }
+        
+        val selfFormatMenuItem = JMenuItem("Фрактал")
+        selfFormatMenuItem.addActionListener {
+            val fractalData = FractalData(plane.xMin, plane.xMax, plane.yMin, plane.yMax, colorFuncIndex)
+            val fractalSaver = FractalDataFileSaver(fractalData)
+        }
+        
+        val saveImageMenuItem = JMenuItem("Изображение")
+        val fileChooser = JFileChooser()
+        saveImageMenuItem.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent?) {
+                super.mousePressed(e)
+                fileChooser.dialogTitle = "Сохранение файла"
+                val result = fileChooser.showSaveDialog(this@MainWindow)
+                if (result == JFileChooser.APPROVE_OPTION) JOptionPane.showMessageDialog(
+                    this@MainWindow,
+                    "Файл '" + fileChooser.selectedFile +
+                            "  сохранен, наверное"
+                )
+            }
+        })
+        
+        val saveMenu = JMenu("Сохранить как")
+        saveMenu.add(selfFormatMenuItem)
+        saveMenu.addSeparator()
+        saveMenu.add(saveImageMenuItem)
+
+        val fileMenu = JMenu("Файл")
+        fileMenu.add(openItem)
+        fileMenu.addSeparator()
+        fileMenu.add(saveMenu)
+
+        return fileMenu
     }
 
     private fun createAboutButton(): JButton {
@@ -299,9 +307,10 @@ open class MainWindow : JFrame() {
                 super.mousePressed(e)
                 e?.let {
                     val frame = JFrame()
-                    frame.minimumSize = Dimension(1200, 450)
-                    frame.add(Text_Animation())
                     frame.isVisible = true
+                    frame.add(AboutPanel())
+                    frame.minimumSize = Dimension(800, 500)
+                    frame.pack()
                     frame.defaultCloseOperation = DISPOSE_ON_CLOSE
 
                 }
@@ -315,28 +324,27 @@ open class MainWindow : JFrame() {
     private fun createColorMenu(): JMenu {
         val colorMenu = JMenu("Выбор цветовой гаммы")
 
-        val fClr = JColorChooser()
-        val sClr = JColorChooser()
+        val colorSchema1 = JButton()
+        colorSchema1.text = "Цветовая схема #1"
+        val colorSchema2 = JButton()
+        colorSchema2.text = "Цветовая схема #2"
+        val colorSchema3 = JButton()
+        colorSchema3.text = "Цветовая схема #3"
 
-        fClr.addPropertyChangeListener {
-            firstColor = fClr.selectionModel.selectedColor
-            repaint()
-        }
-
-        sClr.addPropertyChangeListener {
-            secondColor = sClr.selectionModel.selectedColor
-            repaint()
-        }
-
-        colorMenu.add(fClr)
-        colorMenu.add(sClr)
+        colorMenu.add(colorSchema1)
+        colorMenu.add(colorSchema2)
+        colorMenu.add(colorSchema3)
 
         return colorMenu
     }
 
     private fun createOpenButton(): JButton {
         val openButton = JButton("Открыть")
-        var fileChooser = JFileChooser()
+        val fileChooser = JFileChooser()
+        val filter = FileNameExtensionFilter(
+            "image", "JPG", ".PNG"
+        )
+        fileChooser.fileFilter = filter
         openButton.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
                 super.mousePressed(e)
@@ -349,18 +357,32 @@ open class MainWindow : JFrame() {
 
     private fun createSaveButton(): JButton {
         val saveButton = JButton("Сохранить")
+        val fileChooser = JFileChooser()
+        saveButton.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent?) {
+                super.mousePressed(e)
+                fileChooser.dialogTitle = "Сохранение файла"
+                val result = fileChooser.showSaveDialog(this@MainWindow)
+                if (result == JFileChooser.APPROVE_OPTION) JOptionPane.showMessageDialog(
+                    this@MainWindow,
+                    "Файл '" + fileChooser.selectedFile +
+                            "  сохранен, наверное"
+                )
+            }
+        })
         return saveButton
     }
 
-    private fun createDynamicalItsButton(): JButton {
-        val dynIt = JButton("Динамическая итерация")
+    private fun createDynamicalItsButton(): JCheckBox {
+        val dynIt = JCheckBox("Динамическая итерация")
+        dynIt.isSelected=true
         return dynIt
     }
 
     private fun createCtrlZButton(): JButton {
         val ctrlzButton = JButton("Отменить предыдущее действие")
         ctrlzButton.addMouseListener(
-            object : MouseAdapter(){
+            object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent?) {
                     super.mouseClicked(e)
                     if (operations.size > 0) {
@@ -376,22 +398,22 @@ open class MainWindow : JFrame() {
 
     }
 
-private fun createRecordBtn(plane: Plane): JButton {
-    val btn = JButton("Record");
+    private fun createRecordBtn(plane: Plane): JButton {
+        val btn = JButton("Record")
 
-    btn.addMouseListener(object : MouseAdapter() {
-        override fun mousePressed(e: MouseEvent?) {
-            super.mousePressed(e)
-            e?.let {
-                _videoWindow.apply {
-                    this.plane = plane;
-                    isVisible = true
+        btn.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent?) {
+                super.mousePressed(e)
+                e?.let {
+                    _videoWindow.apply {
+                        this.plane = plane
+                        isVisible = true
+                    }
                 }
             }
-        }
-    })
-    return btn;
-}
+        })
+        return btn
+    }
 
     override fun setVisible(b: Boolean) {
         super.setVisible(b)
@@ -406,21 +428,20 @@ private fun createRecordBtn(plane: Plane): JButton {
         const val GROW = GroupLayout.DEFAULT_SIZE
         const val SHRINK = GroupLayout.PREFERRED_SIZE
 
-        var colorScheme: (Float) -> Color = ::testFunc;
+        var colorScheme: (Float) -> Color = ::testFunc
     }
 
-// TODO: for testing video creation
-fun getScreenShot(width: Int, height: Int): BufferedImage {
+    // TODO: for testing video creation
+    fun getScreenShot(width: Int, height: Int): BufferedImage {
 
-    val image = BufferedImage(
-        width,
-        height,
-        BufferedImage.TYPE_INT_RGB
-    )
-    mainPanel.paint(image.graphics)
-    return image
-}
-
+        val image = BufferedImage(
+            width,
+            height,
+            BufferedImage.TYPE_INT_RGB
+        )
+        mainPanel.paint(image.graphics)
+        return image
+    }
 
 
 }
