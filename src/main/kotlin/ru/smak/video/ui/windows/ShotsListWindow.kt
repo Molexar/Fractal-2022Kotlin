@@ -54,7 +54,7 @@ class ShotsListWindow(val mainComponent: VideoWindow) : JFrame(), DisposableHand
         _deleteBtn.addMouseListener(shotsThumbnailsWindowOperations)
     }
 
-    private fun setupScrollbar() { // todo
+    private fun setupScrollbar() {
 
         val jsp = JScrollPane(thumbsPanel)
             .apply{setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);};

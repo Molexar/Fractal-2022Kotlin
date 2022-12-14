@@ -1,11 +1,6 @@
 package ru.smak.math.video
 
-import ru.smak.math.Complex
 import kotlin.math.pow
-
-fun lerpUnclamped(p0: Complex, p1: Complex, t: Double): Complex {
-    return p0 + (p1 - p0) * t
-}
 
 fun lerpUnclamped(p0: Double, p1: Double, t: Double): Double {
     return p0 + (p1 - p0) * t
