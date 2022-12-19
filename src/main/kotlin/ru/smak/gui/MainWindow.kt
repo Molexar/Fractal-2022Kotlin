@@ -45,6 +45,8 @@ open class MainWindow : JFrame() {
     val minSz = Dimension(1000, 600)
     val mainPanel: GraphicsPanel
 
+    private lateinit var dynIt: JCheckBox
+
     private val _videoWindow = VideoWindow(this).apply { isVisible = false; }
 
 
@@ -267,9 +269,11 @@ open class MainWindow : JFrame() {
                 plane.yEdges = Pair(fractalData.yMin, fractalData.yMax)
                 fp.plane.xEdges = Pair(fractalData.xMin, fractalData.xMax)
                 fp.plane.yEdges = Pair(fractalData.yMin, fractalData.yMax)
+                colorFuncIndex = fractalData.colorFuncIndex
+                _colorSchemes[colorFuncIndex].doClick()
+                dynIt.isSelected = fractalData.isDynamical
                 fp.colorFunc = ColorFuncs[fractalData.colorFuncIndex]
                 colorScheme = ColorFuncs[fractalData.colorFuncIndex]
-                checkbox.isSelected = fractalData.isDynamical
                 trgsz.getTargetFromPlane(plane)
                 Mandelbrot.maxIterations = fractalData.maxIterations
 //                plane.width=mainPanel.width
@@ -281,7 +285,7 @@ open class MainWindow : JFrame() {
 
         val selfFormatMenuItem = JMenuItem("Фрактал")
         selfFormatMenuItem.addActionListener {
-            val fractalData = FractalData(plane.xMin, plane.xMax, plane.yMin, plane.yMax, colorFuncIndex, checkbox.isSelected, Mandelbrot.maxIterations)
+            val fractalData = FractalData(plane.xMin, plane.xMax, plane.yMin, plane.yMax, colorFuncIndex, dynIt.isSelected, Mandelbrot.maxIterations)
             val fractalSaver = FractalDataFileSaver(fractalData)
         }
 
@@ -345,6 +349,7 @@ open class MainWindow : JFrame() {
         return btnSave
     }
 
+    private lateinit var _colorSchemes: Array<JRadioButton>
 
     private fun createColorMenu(): JMenu {
         val colorMenu = JMenu("Выбор цветовой гаммы")
@@ -357,6 +362,12 @@ open class MainWindow : JFrame() {
 
         val colorSchema3 = JRadioButton()
         colorSchema3.text = "Цветовая схема #3"
+
+        _colorSchemes = Array(3, init = { _ -> JRadioButton() })
+        
+        _colorSchemes[0] = colorSchema1
+        _colorSchemes[1] = colorSchema2
+        _colorSchemes[2] = colorSchema3
 
         colorSchema1.addActionListener {
             colorFuncIndex = 0
@@ -429,7 +440,7 @@ open class MainWindow : JFrame() {
 
     private fun createDynamicIt(): JMenu {
         val dynMenu = JMenu("Переключатель динамической итерации")
-        val dynIt = JCheckBox("Динамическая итерация")
+        dynIt = JCheckBox("Динамическая итерация")
         dynIt.isSelected = true
 
         dynMenu.add(dynIt)
