@@ -295,7 +295,7 @@ open class MainWindow : JFrame() {
             }
         }
 
-        val selfFormatMenuItem = JMenuItem("Фрактал")
+        val selfFormatMenuItem = JMenuItem("Фрактал...")
         selfFormatMenuItem.addActionListener {
             val fractalData = FractalData(
                 plane.xMin,
@@ -325,7 +325,7 @@ open class MainWindow : JFrame() {
             }
         })
 
-        val saveMenu = JMenu("Сохранить как")
+        val saveMenu = JMenu("Сохранить как...")
         saveMenu.add(selfFormatMenuItem)
         saveMenu.addSeparator()
         saveMenu.add(saveImageMenuItem)
@@ -611,6 +611,23 @@ open class MainWindow : JFrame() {
 
     private fun createVideoMenu(): JMenu {
         val videoMenu = JMenu("Видео-Фото")
+        videoMenu.add(createSaveButtonImage())
+        videoMenu.addSeparator()
+        return videoMenu
+    }
+
+    private fun createFractalActionMenu(): JMenu {
+        val frActMenu = JMenu("Видео-Фото")
+        frActMenu.add(createColorMenu())
+        frActMenu.addSeparator()
+        frActMenu.add(createDynamicIt())
+        frActMenu.addSeparator()
+        frActMenu.add(createCtrlZButton())
+        return frActMenu
+    }
+
+    private fun createVideoMenu(): JMenu {
+        val videoMenu = JMenu("Действия над фракталом")
         videoMenu.add(createSaveButtonImage())
         videoMenu.addSeparator()
         return videoMenu
