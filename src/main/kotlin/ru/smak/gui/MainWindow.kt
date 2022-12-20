@@ -26,14 +26,14 @@ open class MainWindow : JFrame() {
     private var fp: FractalPainter
     var image = BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB)
 
-        private inner class Rollback(
+    private inner class Rollback(
         private val targetSz: TargetSz,
     ) {
         private val xMin = targetSz.targetXMin
         private val xMax = targetSz.targetXMax
         private val yMin = targetSz.targetYMin
         private val yMax = targetSz.targetYMax
-            private val maxIterations = Mandelbrot.maxIterations
+        private val maxIterations = Mandelbrot.maxIterations
         fun rollback() {
             makeOneToOne(plane, xMin, xMax, yMin, yMax, mainPanel.size, targetSz)
             Mandelbrot.maxIterations = maxIterations
@@ -277,7 +277,15 @@ open class MainWindow : JFrame() {
 
         val selfFormatMenuItem = JMenuItem("Фрактал")
         selfFormatMenuItem.addActionListener {
-            val fractalData = FractalData(plane.xMin, plane.xMax, plane.yMin, plane.yMax, colorFuncIndex, checkbox.isSelected, Mandelbrot.maxIterations)
+            val fractalData = FractalData(
+                plane.xMin,
+                plane.xMax,
+                plane.yMin,
+                plane.yMax,
+                colorFuncIndex,
+                checkbox.isSelected,
+                Mandelbrot.maxIterations
+            )
             val fractalSaver = FractalDataFileSaver(fractalData)
         }
 
@@ -320,7 +328,7 @@ open class MainWindow : JFrame() {
             override fun mousePressed(e: MouseEvent?) {
                 super.mousePressed(e)
                 e?.let {
-                    if (frame.isShowing){
+                    if (frame.isShowing) {
                         frame.dispose()
                     }
                     frame.isVisible = true
@@ -344,26 +352,43 @@ open class MainWindow : JFrame() {
     private fun createFractalMenu(): JMenu {
         val fractalMenu = JMenu("Выбор фрактала")
 
-        val fractalSchema1 = JButton()
+        val fractalSchema1 = JRadioButton()
         fractalSchema1.text = "Мандельброт"
-        fractalSchema1.addActionListener { FractalFuncIndex = 0
+        fractalSchema1.isSelected = true
+
+        val fractalSchema2 = JRadioButton()
+        fractalSchema2.text = "Жюлиа"
+
+        val fractalSchema3 = JRadioButton()
+        fractalSchema3.text = "Рандомный фрактал"
+
+        fractalSchema1.addActionListener {
+            FractalFuncIndex = 0
             fp.fractal = FractalFuncs[FractalFuncIndex]
             fractalScheme = FractalFuncs[FractalFuncIndex]
             mainPanel.repaint()
-        }
-        val fractalSchema2 = JButton()
-        fractalSchema2.text = "Жюлиа"
-        fractalSchema2.addActionListener { FractalFuncIndex = 1
-            fp.fractal = FractalFuncs[FractalFuncIndex]
-            fractalScheme = FractalFuncs[FractalFuncIndex]
-            mainPanel.repaint()}
-        val fractalSchema3 = JButton()
-        fractalSchema3.text = "Рандомный фрактал"
-        fractalSchema3.addActionListener { FractalFuncIndex = 2
-            fp.fractal = FractalFuncs[FractalFuncIndex]
-            fractalScheme = FractalFuncs[FractalFuncIndex]
-            mainPanel.repaint()}
+            fractalSchema2.isSelected = false
+            fractalSchema3.isSelected = false
 
+        }
+
+        fractalSchema2.addActionListener {
+            FractalFuncIndex = 1
+            fp.fractal = FractalFuncs[FractalFuncIndex]
+            fractalScheme = FractalFuncs[FractalFuncIndex]
+            mainPanel.repaint()
+            fractalSchema1.isSelected = false
+            fractalSchema3.isSelected = false
+        }
+
+        fractalSchema3.addActionListener {
+            FractalFuncIndex = 2
+            fp.fractal = FractalFuncs[FractalFuncIndex]
+            fractalScheme = FractalFuncs[FractalFuncIndex]
+            mainPanel.repaint()
+            fractalSchema1.isSelected = false
+            fractalSchema2.isSelected = false
+        }
 
         fractalMenu.add(fractalSchema1)
         fractalMenu.add(fractalSchema2)
@@ -476,10 +501,15 @@ open class MainWindow : JFrame() {
             }
         }
 
-        ctrlZMenu.inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().menuShortcutKeyMask),
-            "pressed")
-        ctrlZMenu.actionMap.put("pressed",
-            pressed)
+        ctrlZMenu.inputMap.put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().menuShortcutKeyMaskEx),
+            "pressed"
+        )
+
+        ctrlZMenu.actionMap.put(
+            "pressed",
+            pressed
+        )
 
         ctrlZMenu.addMouseListener(
             object : MouseAdapter() {
@@ -495,7 +525,6 @@ open class MainWindow : JFrame() {
         )
 
         return ctrlZMenu
-
     }
 
     private fun createRecordBtn(plane: Plane): JMenu {
@@ -515,52 +544,11 @@ open class MainWindow : JFrame() {
         return btn
     }
 
-    private fun createFormulaMenu(): JMenu {
-        val colorMenu = JMenu("Выбор формулы")
-
-        val formula1 = JRadioButton()
-        formula1.text = "Формула #1"
-        formula1.isSelected = true
-
-        val formula2 = JRadioButton()
-        formula2.text = "Формула #2"
-
-        val formula3 = JRadioButton()
-        formula3.text = "Формула #3"
-
-        formula1.addActionListener {
-
-            mainPanel.repaint()
-            formula3.isSelected = false
-            formula2.isSelected = false
-        }
-
-        formula2.addActionListener {
-
-            mainPanel.repaint()
-            formula1.isSelected = false
-            formula3.isSelected = false
-        }
-
-        formula3.addActionListener {
-
-            mainPanel.repaint()
-            formula1.isSelected = false
-            formula2.isSelected = false
-        }
-
-        colorMenu.add(formula1)
-        colorMenu.add(formula2)
-        colorMenu.add(formula3)
-
-        return colorMenu
-    }
-
     private fun createFractalActionMenu(): JMenu {
         val frActMenu = JMenu("Действия над фракталом")
         frActMenu.add(createColorMenu())
         frActMenu.addSeparator()
-        frActMenu.add(createFormulaMenu())
+        frActMenu.add(createFractalMenu())
         frActMenu.addSeparator()
         frActMenu.add(createDynamicIt())
         frActMenu.addSeparator()
