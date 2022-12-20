@@ -414,7 +414,6 @@ open class MainWindow : JFrame() {
             mainPanel.repaint()
             fractalSchema1.isSelected = false
             fractalSchema2.isSelected = false
-
         }
         
         _fractalSchemes = arrayOf(fractalSchema1, fractalSchema2, fractalSchema3)
@@ -661,7 +660,7 @@ open class MainWindow : JFrame() {
         val frActMenu = JMenu("Действия над фракталом")
         frActMenu.add(createColorMenu())
         frActMenu.addSeparator()
-        frActMenu.add(createFormulaMenu())
+        frActMenu.add(createFractalMenu())
         frActMenu.addSeparator()
         frActMenu.add(createDynamicIt())
         frActMenu.addSeparator()
