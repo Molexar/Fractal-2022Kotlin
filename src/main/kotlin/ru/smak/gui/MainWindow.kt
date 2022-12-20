@@ -44,7 +44,7 @@ open class MainWindow : JFrame() {
     private var rect: Rectangle = Rectangle()
     val minSz = Dimension(1000, 600)
     val mainPanel: GraphicsPanel
-    var sw : SecondWindow? = null
+    var sw: SecondWindow? = null
 
     private lateinit var dynIt: JCheckBox
 
@@ -104,7 +104,7 @@ open class MainWindow : JFrame() {
                     e?.let {
                         if (it.button == MouseEvent.BUTTON1 && fractalScheme == FractalFuncs[0]) {
                             sw?.let {
-                                if(isEnabled) it.dispose()
+                                if (isEnabled) it.dispose()
                             }
                             sw = SecondWindow(colorScheme).apply {
                                 Julia.selectedPoint =
@@ -271,22 +271,37 @@ open class MainWindow : JFrame() {
                 fp.plane.yEdges = Pair(fractalData.yMin, fractalData.yMax)
                 colorFuncIndex = fractalData.colorFuncIndex
                 _colorSchemes[colorFuncIndex].doClick()
+                if (!_colorSchemes[colorFuncIndex].isSelected) {
+                    _colorSchemes[colorFuncIndex].isSelected = true
+                }
+                FractalFuncIndex = fractalData.fractalFuncIndex
+                fractalScheme = FractalFuncs[FractalFuncIndex]
                 dynIt.isSelected = fractalData.isDynamical
                 fp.colorFunc = ColorFuncs[fractalData.colorFuncIndex]
                 colorScheme = ColorFuncs[fractalData.colorFuncIndex]
                 checkbox.isSelected = fractalData.isDynamical
                 trgsz.getTargetFromPlane(plane)
                 Mandelbrot.maxIterations = fractalData.maxIterations
-//                plane.width=mainPanel.width
-//                plane.height=mainPanel.height
-//                makeOneToOne(plane,trgsz, mainPanel.size)
+                _fractalSchemes[fractalData.fractalFuncIndex].doClick()
+                if (!_fractalSchemes[fractalData.fractalFuncIndex].isSelected) {
+                    _fractalSchemes[fractalData.fractalFuncIndex].isSelected = true
+                }
                 this.repaint()
             }
         }
 
         val selfFormatMenuItem = JMenuItem("Фрактал")
         selfFormatMenuItem.addActionListener {
-            val fractalData = FractalData(plane.xMin, plane.xMax, plane.yMin, plane.yMax, colorFuncIndex, dynIt.isSelected, Mandelbrot.maxIterations)
+            val fractalData = FractalData(
+                plane.xMin,
+                plane.xMax,
+                plane.yMin,
+                plane.yMax,
+                FractalFuncIndex,
+                colorFuncIndex,
+                dynIt.isSelected,
+                Mandelbrot.maxIterations
+            )
             val fractalSaver = FractalDataFileSaver(fractalData)
         }
 
@@ -349,8 +364,9 @@ open class MainWindow : JFrame() {
         btnSave.isVisible = true
         return btnSave
     }
+    
+    private lateinit var _fractalSchemes: Array<JRadioButton>
 
-    private lateinit var _colorSchemes: Array<JRadioButton>
     private fun createFractalMenu(): JMenu {
         val fractalMenu = JMenu("Выбор фрактала")
 
@@ -391,6 +407,8 @@ open class MainWindow : JFrame() {
             fractalSchema2.isSelected = false
 
         }
+        
+        _fractalSchemes = arrayOf(fractalSchema1, fractalSchema2, fractalSchema3)
 
         fractalMenu.add(fractalSchema1)
         fractalMenu.add(fractalSchema2)
@@ -398,6 +416,8 @@ open class MainWindow : JFrame() {
 
         return fractalMenu
     }
+
+    private lateinit var _colorSchemes: Array<JRadioButton>
 
     private fun createColorMenu(): JMenu {
         val colorMenu = JMenu("Выбор цветовой гаммы")
@@ -413,7 +433,7 @@ open class MainWindow : JFrame() {
         colorSchema3.text = "Цветовая схема #3"
 
         _colorSchemes = Array(3, init = { _ -> JRadioButton() })
-        
+
         _colorSchemes[0] = colorSchema1
         _colorSchemes[1] = colorSchema2
         _colorSchemes[2] = colorSchema3
