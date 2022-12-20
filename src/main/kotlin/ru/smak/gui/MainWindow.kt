@@ -515,9 +515,52 @@ open class MainWindow : JFrame() {
         return btn
     }
 
+    private fun createFormulaMenu(): JMenu {
+        val colorMenu = JMenu("Выбор формулы")
+
+        val formula1 = JRadioButton()
+        formula1.text = "Формула #1"
+        formula1.isSelected = true
+
+        val formula2 = JRadioButton()
+        formula2.text = "Формула #2"
+
+        val formula3 = JRadioButton()
+        formula3.text = "Формула #3"
+
+        formula1.addActionListener {
+
+            mainPanel.repaint()
+            formula3.isSelected = false
+            formula2.isSelected = false
+        }
+
+        formula2.addActionListener {
+
+            mainPanel.repaint()
+            formula1.isSelected = false
+            formula3.isSelected = false
+        }
+
+        formula3.addActionListener {
+
+            mainPanel.repaint()
+            formula1.isSelected = false
+            formula2.isSelected = false
+        }
+
+        colorMenu.add(formula1)
+        colorMenu.add(formula2)
+        colorMenu.add(formula3)
+
+        return colorMenu
+    }
+
     private fun createFractalActionMenu(): JMenu {
-        val frActMenu = JMenu("Видео-Фото")
+        val frActMenu = JMenu("Действия над фракталом")
         frActMenu.add(createColorMenu())
+        frActMenu.addSeparator()
+        frActMenu.add(createFormulaMenu())
         frActMenu.addSeparator()
         frActMenu.add(createDynamicIt())
         frActMenu.addSeparator()
@@ -526,7 +569,7 @@ open class MainWindow : JFrame() {
     }
 
     private fun createVideoMenu(): JMenu {
-        val videoMenu = JMenu("Действия над фракталом")
+        val videoMenu = JMenu("Видео-Фото")
         videoMenu.add(createSaveButtonImage())
         videoMenu.addSeparator()
         return videoMenu
