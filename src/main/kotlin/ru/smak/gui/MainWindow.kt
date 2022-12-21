@@ -56,6 +56,7 @@ open class MainWindow : JFrame() {
     private var numButtonPressed: Int = 0
     var checkbox = createDynamicIt()
 
+
     init {
         plane = Plane(-2.0, 1.0, -1.0, 1.0)
 
@@ -66,6 +67,7 @@ open class MainWindow : JFrame() {
             add(createFractalActionMenu())
             add(createAboutButton())
             add(videoMenu)
+
         }
 
         jMenuBar = menuBar
@@ -114,6 +116,29 @@ open class MainWindow : JFrame() {
                     }
                 }
             })
+
+
+        val pressed: Action = object : AbstractAction() {
+            override fun actionPerformed(e: ActionEvent) {
+                if (operations.size > 0) {
+                    operations.last().rollback()
+                    operations.removeAt(operations.lastIndex)
+                    mainPanel.repaint()
+                }
+            }
+        }
+
+        menuBar.inputMap.put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().menuShortcutKeyMaskEx),
+            "pressed"
+        )
+
+        menuBar.actionMap.put(
+            "pressed",
+            pressed
+        )
+
+
 
         mainPanel.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
@@ -552,7 +577,7 @@ open class MainWindow : JFrame() {
 
 
         ctrlZMenu.inputMap.put(
-            KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
+            KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().menuShortcutKeyMaskEx),
             "pressed"
         )
 
@@ -561,7 +586,7 @@ open class MainWindow : JFrame() {
             pressed
         )
 
-        ctrlZMenu.addActionListener(){
+        ctrlZMenu.addActionListener {
             if (operations.size > 0) {
                 operations.last().rollback()
                 operations.removeAt(operations.lastIndex)
