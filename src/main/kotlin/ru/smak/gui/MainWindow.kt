@@ -65,11 +65,7 @@ open class MainWindow : JFrame() {
             add(createFileMenu())
             add(createFractalActionMenu())
             add(createAboutButton())
-
-            add(createSaveButtonImage())
-
             add(videoMenu)
-
         }
 
         jMenuBar = menuBar
@@ -328,7 +324,7 @@ open class MainWindow : JFrame() {
         val saveMenu = JMenu("Сохранить как...")
         saveMenu.add(selfFormatMenuItem)
         saveMenu.addSeparator()
-        saveMenu.add(saveImageMenuItem)
+        saveMenu.add(createSaveButtonImage())
 
         val fileMenu = JMenu("Файл")
         fileMenu.add(openItem)
@@ -360,8 +356,8 @@ open class MainWindow : JFrame() {
     }
 
 
-    private fun createSaveButtonImage(): JMenu {
-        val btnSave = JMenu("Save")
+    private fun createSaveButtonImage(): JMenuItem {
+        val btnSave = JMenuItem("Изображение...")
         btnSave.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent?) {
                 super.mousePressed(e)
@@ -596,25 +592,6 @@ open class MainWindow : JFrame() {
         return btn
     }
 
-    private fun createFractalActionMenu(): JMenu {
-        val frActMenu = JMenu("Действия над фракталом")
-        frActMenu.add(createColorMenu())
-        frActMenu.addSeparator()
-        frActMenu.add(createFractalMenu())
-        frActMenu.addSeparator()
-        frActMenu.add(createDynamicIt())
-        frActMenu.addSeparator()
-        frActMenu.add(createCtrlZButton())
-        return frActMenu
-    }
-
-    private fun createVideoMenu(): JMenu {
-        val videoMenu = JMenu("Видео-Фото")
-        videoMenu.add(createSaveButtonImage())
-        videoMenu.addSeparator()
-        return videoMenu
-    }
-
     private fun createFormulaMenu(): JMenu {
         val colorMenu = JMenu("Выбор формулы")
 
@@ -669,9 +646,7 @@ open class MainWindow : JFrame() {
     }
 
     private fun createVideoMenu(): JMenu {
-        val videoMenu = JMenu("Видео-Фото")
-        videoMenu.add(createSaveButtonImage())
-        videoMenu.addSeparator()
+        val videoMenu = JMenu("Запись видео")
         return videoMenu
     }
 
