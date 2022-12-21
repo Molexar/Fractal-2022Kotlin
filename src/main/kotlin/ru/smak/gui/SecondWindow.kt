@@ -3,8 +3,8 @@ package ru.smak.gui
 import ru.smak.graphics.Converter
 import ru.smak.graphics.FractalPainter
 import ru.smak.graphics.Plane
-import ru.smak.graphics.testFunc
 import ru.smak.gui.MainWindow.Companion.GROW
+import ru.smak.math.FractalFuncs
 import ru.smak.math.Julia
 import ru.smak.math.Mandelbrot
 import java.awt.Color
@@ -18,19 +18,22 @@ import javax.swing.*
 
 class SecondWindow(colorScheme: (Float) -> Color) : JFrame() {
     private var rect: Rectangle = Rectangle()
-    val minSz = Dimension(600, 450)
+    val minSz = Dimension(1000, 600)
     val secondPanel: GraphicsPanel
     val trgsz = TargetSz()
     private var startPoint: Point? = null
     private var numButtonPressed: Int = 0
+    private var plane : Plane = Plane(-2.0, 1.0, -1.0, 1.0)
+    private var fpj : FractalPainter = FractalPainter(FractalFuncs[1], colorScheme, plane)
+
 
     init {
 
         defaultCloseOperation = DISPOSE_ON_CLOSE
         minimumSize = minSz
 
-        val plane = Plane(-2.0, 1.0, -1.0, 1.0)
-        val fpj = FractalPainter(Julia()::isInSet, colorScheme, plane)
+        plane = Plane(-2.0, 1.0, -1.0, 1.0)
+        fpj = FractalPainter(FractalFuncs[1], colorScheme, plane)
         trgsz.getTargetFromPlane(plane)
         secondPanel = GraphicsPanel().apply {
             background = Color.WHITE
@@ -40,6 +43,7 @@ class SecondWindow(colorScheme: (Float) -> Color) : JFrame() {
                     super.componentResized(e)
                     plane.width = width
                     plane.height = height
+                    makeOneToOne(plane,trgsz, size)
                 }
             })
         }
@@ -132,5 +136,9 @@ class SecondWindow(colorScheme: (Float) -> Color) : JFrame() {
                     .addGap(8)
             )
         }
+    }
+    fun changeColor(colorScheme: (Float) -> Color){
+        fpj.colorFunc = colorScheme
+        repaint()
     }
 }
