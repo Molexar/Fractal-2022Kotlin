@@ -176,6 +176,7 @@ open class MainWindow : JFrame() {
                                     Mandelbrot.maxIterations =200+d
                                     println(Mandelbrot.maxIterations)
                                 }
+
                             }
                             makeOneToOne(
                                 plane,
@@ -588,7 +589,7 @@ open class MainWindow : JFrame() {
             pressed
         )
 
-        ctrlZMenu.addActionListener {
+        ctrlZMenu.addActionListener(){
             if (operations.size > 0) {
                 operations.last().rollback()
                 operations.removeAt(operations.lastIndex)
