@@ -67,7 +67,6 @@ open class MainWindow : JFrame() {
             add(createFractalActionMenu())
             add(createAboutButton())
             add(videoMenu)
-
         }
 
         jMenuBar = menuBar
@@ -168,7 +167,7 @@ open class MainWindow : JFrame() {
                             val x2 = rect.x2?.let { Converter.xScrToCrt(it, plane) } ?: return@let
                             val y1 = rect.y1?.let { Converter.yScrToCrt(it, plane) } ?: return@let
                             val y2 = rect.y2?.let { Converter.yScrToCrt(it, plane) } ?: return@let
-                            if (checkbox.isSelected) {
+                            if (dynIt.isSelected) {
                                 val sq: Int = plane.height * plane.width
                                 val new_sq = abs(x2 - x1) * abs(y2 - y1)
                                 var d: Int = 100
@@ -577,7 +576,7 @@ open class MainWindow : JFrame() {
 
 
         ctrlZMenu.inputMap.put(
-            KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().menuShortcutKeyMaskEx),
+            KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
             "pressed"
         )
 
@@ -586,7 +585,8 @@ open class MainWindow : JFrame() {
             pressed
         )
 
-        ctrlZMenu.addActionListener {
+
+        ctrlZMenu.addActionListener(){
             if (operations.size > 0) {
                 operations.last().rollback()
                 operations.removeAt(operations.lastIndex)
